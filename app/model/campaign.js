@@ -48,5 +48,17 @@ var campaignSchema = new Schema({
 	},
 	picture: [{
 		type: String
+	}],
+	visits: {
+		type: Number
+	},
+	likes: {
+		type: Number
+	},
+	donors: [{
+		type: Schema.Types.ObjectId, ref:'User'
+	}],
+	volunteers: [{
+		type: Schema.Types.ObjectId, ref:'User'
 	}]
 });

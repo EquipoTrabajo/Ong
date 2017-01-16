@@ -21,7 +21,7 @@ app.set('port', port);
  */
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://127.0.0.4/donaciondb', function () {
+mongoose.connect('mongodb://prueba:prueba@ds131878.mlab.com:31878/ong', function () {
   console.log('MongoDB connection succesful');
 });
 
