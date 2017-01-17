@@ -52,9 +52,6 @@ var personSchema = new Schema({
 	}]
 });
 
-var Person = mongoose.model('Person', personSchema);
-module.exports = Person;
-
 var Person = module.exports = mongoose.model('Person', personSchema);
 
 // Get User

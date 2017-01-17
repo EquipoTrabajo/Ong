@@ -55,34 +55,12 @@ router.post('/company', function (req, res) {
 });
 
 router.post('/receiving-entity', function (req, res) {
-	var user = new User({
-		name: req.body.name,
-		profile_picture: req.body.profile_picture,
-		cover_picture: req.body.cover_picture,
-		address: {
-			city: req.body.city,
-			state: req.body.state,
-			country: req.body.country,
-			coordinates: [req.body.cordx, req.body.cordy]
-		},
-		score: req.body.score,
-		level: req.body.level
-	});
-
-	user.save(function (err) {
-	  if (err) return err;
-	  
-	  var receivingEntity = new ReceivingEntity({
-	    userid: user._id,
-		age: req.body.age,
-		slogan: req.body.slogan,
-		description: req.body.description
-	  });
-	  
-	  receivingEntity.save(function (err) {
-	    if (err) return err;
-	    // thats it!
-	  });
+	var receivingEntity = req.body;
+	ReceivingEntity.addReceivingEntity(receivingEntity, function (err, receivingEntity) {
+		if(err){
+			throw err;
+		}
+		res.json(receivingEntity);
 	});
 });
 
@@ -110,6 +88,26 @@ router.post('/testing', function (req, res) {
 // Get User
 router.get('/person/:username', function (req, res) {
 	Person.getPersonByUsername(req.params.username, function (err, user) {
+		if(err){
+			throw err;
+		}
+		res.json(user);
+	});
+});
+
+// Get User
+router.get('/person/:username', function (req, res) {
+	Person.getPersonByUsername(req.params.username, function (err, user) {
+		if(err){
+			throw err;
+		}
+		res.json(user);
+	});
+});
+
+// Get Receiving Entity
+router.get('/receiving-entity/:username', function (req, res) {
+	ReceivingEntity.getRecievingEntityByUsername(req.params.username, function (err, user) {
 		if(err){
 			throw err;
 		}

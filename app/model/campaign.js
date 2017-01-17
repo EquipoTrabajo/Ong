@@ -46,7 +46,15 @@ var campaignSchema = new Schema({
 	description: {
 		type: String
 	},
-	picture: [{
+	history: {
+		text: {
+			type: String
+		},
+		banner: {
+			type: String
+		}
+	},
+	multimedia: [{
 		type: String
 	}],
 	visits: {
@@ -60,6 +68,9 @@ var campaignSchema = new Schema({
 	}],
 	volunteers: [{
 		type: Schema.Types.ObjectId, ref:'User'
+	}],
+	certificates_list: [{
+		type: String
 	}]
 });
 
