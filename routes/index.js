@@ -115,4 +115,23 @@ router.get('/receiving-entity/:username', function (req, res) {
 	});
 });
 
+// Get Receiving Entity
+router.get('/Campaigns', function (req, res) {
+	Campaign.getAllCampaigns(function (err, campaigns) {
+		if(err){
+			throw err;
+		}
+		res.json(campaigns);
+	}, 20);
+});
+
+// Get Receiving Entity
+router.get('/Campaigns?nearby=:city', function (req, res) {
+	Campaign.getNearbyCampaigns(req.params.city, function (err, campaigns) {
+		if(err){
+			throw err;
+		}
+		res.json(campaigns);
+	}, 20);
+});
 module.exports = router;

@@ -41,7 +41,14 @@ var campaignSchema = new Schema({
 		country: {
 			type: String
 		},
-		coordinates: []
+		coordinates: {
+			x: {
+				type: Number
+			},
+			y: {
+				type: Number
+			}
+		}
 	},
 	description: {
 		type: String
@@ -83,3 +90,23 @@ module.exports.addCampaign = function (campaign, callback) {
 	Campaign.create(campaign, callback);
 }
 
+
+// Get Campaigns
+module.exports.getAllCampaigns = function (callback, limit) {
+	Campaign.find().populate(['volunteers', 'donors']).exec(callback);
+}
+
+// Get Campaigns
+module.exports.getRecommendedCampaigns = function (user, callback, limit) {
+	Campaign.find().populate(['volunteers', 'donors']).exec(callback);
+}
+
+// Get Campaigns
+module.exports.getNearbyCampaigns = function (user, callback, limit) {
+	Campaign.find({'address.city': user}).populate(['volunteers', 'donors']).exec(callback);
+}
+
+// Get Campaigns
+module.exports.getFriendsDonatedCampaigns = function (callback, limit) {
+	Campaign.find().populate(['volunteers', 'donors']).exec(callback);
+}
