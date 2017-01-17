@@ -40,7 +40,7 @@ var campaignSchema = new Schema({
 		},
 		country: {
 			type: String
-		}
+		},
 		coordinates: []
 	},
 	description: {
@@ -62,3 +62,13 @@ var campaignSchema = new Schema({
 		type: Schema.Types.ObjectId, ref:'User'
 	}]
 });
+
+
+var Campaign = module.exports = mongoose.model('Campaign', campaignSchema);
+
+
+// Add Campaign
+module.exports.addCampaign = function (campaign, callback) {
+	Campaign.create(campaign, callback);
+}
+

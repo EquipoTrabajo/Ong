@@ -22,7 +22,14 @@ var userSchema = new Schema({
 		country: {
 			type: String
 		},
-		coordinates: []
+		coordinates: {
+			x: {
+				type: Number
+			},
+			y: {
+				type: Number
+			}
+		}
 	},
 	score: {
 		type: Number
@@ -32,5 +39,13 @@ var userSchema = new Schema({
 	}
 });
 
-var User = mongoose.model('User', userSchema);
-module.exports = User;
+
+var User = module.exports = mongoose.model('User', userSchema);
+
+
+
+
+// Add User
+module.exports.addUser = function (user, callback) {
+	User.create(user, callback);
+}

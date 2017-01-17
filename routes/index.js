@@ -4,41 +4,21 @@ var User = require('../app/model/user.js');
 var Person = require('../app/model/person.js');
 var Company = require('../app/model/company.js');
 var ReceivingEntity = require('../app/model/receivingEntity.js');
+var Campaign = require('../app/model/campaign.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+//CREATE PERSON TO THE DATABASE
 router.post('/person', function (req, res, next) {
-	console.log(req.body);
-	var user = new User({
-		name: req.body.name,
-		profile_picture: req.body.profile_picture,
-		cover_picture: req.body.cover_picture,
-		address: {
-			city: req.body.city,
-			state: req.body.state,
-			country: req.body.country,
-			coordinates: [req.body.cordx, req.body.cordy]
-		},
-		score: req.body.score,
-		level: req.body.level
-	});
-
-	user.save(function (err) {
-	  if (err) return err;
-	  
-	  var person = new Person({
-	    userid: user._id,
-		age: req.body.age,
-		slogan: req.body.slogan
-	  });
-	  
-	  person.save(function (err) {
-	    if (err) return err;
-	    // thats it!
-	  });
+	var person = req.body;
+	Person.addPerson(person, function (err, person) {
+		if(err){
+			throw err;
+		}
+		res.json(person);
 	});
 });
 
@@ -103,6 +83,37 @@ router.post('/receiving-entity', function (req, res) {
 	    if (err) return err;
 	    // thats it!
 	  });
+	});
+});
+
+router.post('/campaign', function (req, res) {
+	var campaign = req.body;
+	Campaign.addCampaign(campaign, function (err, campaign) {
+		if(err){
+			throw err;
+		}
+		res.json(campaign);
+	});
+});
+
+// just for testing stuffs
+// Delete After
+router.post('/testing', function (req, res) {
+	var temp = req.body.g1;
+	temp["g1f3"] = "v3";
+	res.json(temp);
+});
+
+
+//GET'S
+
+// Get User
+router.get('/person/:username', function (req, res) {
+	Person.getPersonByUsername(req.params.username, function (err, user) {
+		if(err){
+			throw err;
+		}
+		res.json(user);
 	});
 });
 
