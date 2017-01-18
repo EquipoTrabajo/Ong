@@ -118,7 +118,7 @@ router.get('/Campaigns?nearby=:city', function (req, res) {
 });
 
 
-// Get Nearby Campaigns
+// Get recommended Campaigns
 router.get('/Campaigns/recommended', function (req, res) {
 	var userid = '587e5703901ad433650db058'; //get user by session
 	Campaign.getRecommendedCampaigns(userid, function (err, campaigns) {
@@ -128,5 +128,17 @@ router.get('/Campaigns/recommended', function (req, res) {
 		res.json(campaigns);
 	}, 20);
 });
+
+// Get friends Campaigns
+router.get('/Campaigns/friends', function (req, res) {
+	var userid = '587e5703901ad433650db058'; //get user by session
+	Campaign.getFriendsDonatedCampaigns(userid, function (err, campaigns) {
+		if(err){
+			throw err;
+		}
+		res.json(campaigns);
+	});
+});
+
 
 module.exports = router;

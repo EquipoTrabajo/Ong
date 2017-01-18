@@ -116,9 +116,9 @@ module.exports.getRecommendedCampaigns = function (id, callback, limit) {
 		}
 		Campaign.find({'_id': {$in: person.liked_campaigns}}, function (err, campaigns) {
 			var creators = [];
-			var tempCampId = null;
+			var tempCampId = [];
 			for(var camp in campaigns) {
-				tempCampId = campaigns[camp]._id;
+				tempCampId.push(campaigns[camp]._id);
 				for(var i=0; i<campaigns[camp].creators.length; i++) {
 					creators.push(campaigns[camp].creators[i]);
 				}
@@ -135,6 +135,26 @@ module.exports.getNearbyCampaigns = function (user, callback, limit) {
 }
 
 // Get Campaigns
-module.exports.getFriendsDonatedCampaigns = function (callback, limit) {
-	Campaign.find().populate(['volunteers', 'donors']).exec(callback);
+module.exports.getFriendsDonatedCampaigns = function (id, callback) {
+	Person.findById(id, function (err, person) {
+		if(err){
+			throw err;
+		}
+		Person.find({'_id': {$in: person.friend_list}}).populate('userid').exec(function (err, persons) {
+			if(err){
+				throw err;
+			}
+			var tempCampId=[];
+			for (var i = 0; i < persons.length; i++) {
+				for (var d = 0; d < persons[i].donated_campaigns.length; d++) {
+					tempCampId.push(persons[i].donated_campaigns[d]);
+				}
+				for (var v = 0; v < persons[i].volunteer_campaigns.length; v++) {
+					tempCampId.push(persons[i].volunteer_campaigns[v]);
+				}
+			}
+			console.log(tempCampId);
+			Campaign.find({'_id': {$in: tempCampId}}, callback);
+		});
+	});
 }
