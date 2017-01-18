@@ -164,3 +164,8 @@ module.exports.getFriendsDonatedCampaigns = function (id, callback) {
 		});
 	});
 }
+
+// Get Campaigns by category
+module.exports.getCampaignsByCategory = function (category, callback) {
+	Campaign.find({'category': category}).populate(['volunteers', 'donors']).sort({start_date: -1}).exec(callback);
+}

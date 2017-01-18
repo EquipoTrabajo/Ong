@@ -140,5 +140,16 @@ router.get('/Campaigns/friends', function (req, res) {
 	});
 });
 
+// Get category Campaigns
+router.get('/Campaigns/category/:category', function (req, res) {
+	Campaign.getCampaignsByCategory(req.params.category, function (err, campaigns) {
+		if(err){
+			throw err;
+		}
+		res.json(campaigns);
+	});
+});
+
+
 
 module.exports = router;
