@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var User = require('./user.js');
 var Schema = mongoose.Schema;
 
-var commentSchema = new Schema({
+var acknowledgmentSchema = new Schema({
 	likes: [{
 		type: Schema.Types.ObjectId, ref: 'User'
 	}],
@@ -24,4 +24,4 @@ var commentSchema = new Schema({
 	}]
 });
 
-var Comment = module.exports = mongoose.model('Comment', commentSchema);
+var Acknowledgment = module.exports = mongoose.model('Acknowledgment', acknowledgmentSchema);

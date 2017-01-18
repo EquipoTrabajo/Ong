@@ -2,13 +2,12 @@ var mongoose = require('mongoose');
 var User = require('./user.js');
 var Schema = mongoose.Schema;
 
-var commentSchema = new Schema({
-	likes: [{
-		type: Schema.Types.ObjectId, ref: 'User'
-	}],
-	dislikes: [{
-		type: Schema.Types.ObjectId, ref: 'User'
-	}],
+var reviewSchema = new Schema({
+	hearts: {
+		type: Number,
+		min: 1,
+		max: 5
+	},
 	text: {
 		type: String
 	},
@@ -24,4 +23,4 @@ var commentSchema = new Schema({
 	}]
 });
 
-var Comment = module.exports = mongoose.model('Comment', commentSchema);
+var Review = module.exports = mongoose.model('Review', reviewSchema);

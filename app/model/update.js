@@ -2,18 +2,18 @@ var mongoose = require('mongoose');
 var User = require('./user.js');
 var Schema = mongoose.Schema;
 
-var commentSchema = new Schema({
+var updateSchema = new Schema({
 	likes: [{
 		type: Schema.Types.ObjectId, ref: 'User'
 	}],
 	dislikes: [{
 		type: Schema.Types.ObjectId, ref: 'User'
 	}],
-	text: {
+	picture: {
 		type: String
 	},
-	user: {
-		type: Schema.Types.ObjectId, ref: 'User'
+	text: {
+		type: String
 	},
 	created_at: {
 		type: Date,

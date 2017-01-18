@@ -35,14 +35,11 @@ var receivingEntitySchema = new Schema({
 	}],
 	donor_list_company: [{
 		type: Schema.Types.ObjectId, ref:'Company'
+	}],
+	reviews: [{
+		type: Schema.Types.ObjectId, ref:'Review'
 	}]
 });
-
-var ReceivingEntity = mongoose.model('ReceivingEntity', receivingEntitySchema);
-module.exports = ReceivingEntity;
-
-var ReceivingEntity = mongoose.model('ReceivingEntity', receivingEntitySchema);
-module.exports = ReceivingEntity;
 
 var ReceivingEntity = module.exports = mongoose.model('ReceivingEntity', receivingEntitySchema);
 

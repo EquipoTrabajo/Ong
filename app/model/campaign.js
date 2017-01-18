@@ -71,7 +71,7 @@ var campaignSchema = new Schema({
 	likes: [{
 		type: Schema.Types.ObjectId, ref:'User'
 	}],
-	unlikes: [{
+	dislikes: [{
 		type: Schema.Types.ObjectId, ref:'User'
 	}],
 	shares: [{
@@ -85,6 +85,12 @@ var campaignSchema = new Schema({
 	}],
 	certificates_list: [{
 		type: String
+	}],
+	donations: [{
+		type: Schema.Types.ObjectId, ref:'Donation'
+	}],
+	comments: [{
+		type: Schema.Types.ObjectId, ref: 'Comment'
 	}]
 });
 
