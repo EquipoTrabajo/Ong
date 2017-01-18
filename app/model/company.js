@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var User = require('./user.js');
 var Schema = mongoose.Schema;
 
 var companySchema = new Schema({
@@ -6,16 +7,36 @@ var companySchema = new Schema({
 		type: Schema.Types.ObjectId, ref: 'User',
 		required: true
 	},
-	age: {
-		type: Number
+	username: {
+		type: String,
+		required: true,
+		unique: true
 	},
 	slogan: {
 		type: String
 	},
 	description: {
 		type: String
-	}
+	},
+	admins: [{
+		type: Schema.Types.ObjectId, ref: 'Person'
+	}]
 });
 
-var Company = mongoose.model('Company', companySchema);
-module.exports = Company;
+var Company = module.exports = mongoose.model('Company', companySchema);
+
+// Add Company
+module.exports.addCompany = function (body, callback) {
+	var user = body.user;
+	User.addUser(user, function (err, user) {
+		if (err) {throw err};
+		var p = body.company;
+		p["userid"] = user._id;
+		Company.create(p, callback);
+	});
+}
+
+// Get Company
+module.exports.getCompanyByUsername = function (username, callback) {
+	Company.findOne({'username': username}).populate('userid').exec(callback);
+}

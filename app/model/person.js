@@ -54,11 +54,6 @@ var personSchema = new Schema({
 
 var Person = module.exports = mongoose.model('Person', personSchema);
 
-// Get User
-module.exports.getPersonByUsername = function (username, callback) {
-	Person.findOne({'username': username}).populate('userid').exec(callback);
-}
-
 // Add Person
 module.exports.addPerson = function (person, callback) {
 	var user = person.user;
@@ -69,3 +64,15 @@ module.exports.addPerson = function (person, callback) {
 		Person.create(p, callback);
 	});
 }
+
+// Get User
+module.exports.getPersonByUsername = function (username, callback) {
+	Person.findOne({'username': username}).populate('userid').exec(callback);
+}
+
+
+// Get User
+module.exports.getUserOfLikedCampaign = function (id, callback) {
+	Person.findById(id, callback);
+}
+

@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var Person = require('./person');
 var Schema = mongoose.Schema;
 
 var campaignSchema = new Schema({
@@ -26,7 +27,7 @@ var campaignSchema = new Schema({
 		default: 0
 	},
 	creators: [{
-		type: Schema.Types.ObjectId, ref:'Person'
+		type: Schema.Types.ObjectId, ref:'User'
 	}],
 	collaborators: [{
 		type: Schema.Types.ObjectId, ref:'ReceivingEntity'
@@ -67,9 +68,15 @@ var campaignSchema = new Schema({
 	visits: {
 		type: Number
 	},
-	likes: {
-		type: Number
-	},
+	likes: [{
+		type: Schema.Types.ObjectId, ref:'User'
+	}],
+	unlikes: [{
+		type: Schema.Types.ObjectId, ref:'User'
+	}],
+	shares: [{
+		type: Schema.Types.ObjectId, ref:'User'
+	}],
 	donors: [{
 		type: Schema.Types.ObjectId, ref:'User'
 	}],
@@ -90,6 +97,11 @@ module.exports.addCampaign = function (campaign, callback) {
 	Campaign.create(campaign, callback);
 }
 
+// Like Campaign
+module.exports.likeCampaign = function (idcampaign, iduser, callback) {
+	//Campaign.create(campaign, callback);
+}
+
 
 // Get Campaigns
 module.exports.getAllCampaigns = function (callback, limit) {
@@ -97,8 +109,24 @@ module.exports.getAllCampaigns = function (callback, limit) {
 }
 
 // Get Campaigns
-module.exports.getRecommendedCampaigns = function (user, callback, limit) {
-	Campaign.find().populate(['volunteers', 'donors']).exec(callback);
+module.exports.getRecommendedCampaigns = function (id, callback, limit) {
+	Person.getUserOfLikedCampaign(id, function (err, person) {
+		if(err){
+			throw err;
+		}
+		Campaign.find({'_id': {$in: person.liked_campaigns}}, function (err, campaigns) {
+			var creators = [];
+			var tempCampId = null;
+			for(var camp in campaigns) {
+				tempCampId = campaigns[camp]._id;
+				for(var i=0; i<campaigns[camp].creators.length; i++) {
+					creators.push(campaigns[camp].creators[i]);
+				}
+			}
+			console.log(creators);
+			Campaign.find({'creators': {$in: creators}, '_id': {$nin: tempCampId}, 'priority': {$gt: 0}, 'start_date': {$lt: Date.now()}, 'end_date': {$gt: Date.now()}}, callback);
+		});
+	});
 }
 
 // Get Campaigns

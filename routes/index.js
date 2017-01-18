@@ -22,38 +22,19 @@ router.post('/person', function (req, res, next) {
 	});
 });
 
+//Create a company
 router.post('/company', function (req, res) {
-	var user = new User({
-		name: req.body.name,
-		profile_picture: req.body.profile_picture,
-		cover_picture: req.body.cover_picture,
-		address: {
-			city: req.body.city,
-			state: req.body.state,
-			country: req.body.country,
-			coordinates: [req.body.cordx, req.body.cordy]
-		},
-		score: req.body.score,
-		level: req.body.level
-	});
-
-	user.save(function (err) {
-	  if (err) return err;
-	  
-	  var company = new Company({
-	    userid: user._id,
-		age: req.body.age,
-		slogan: req.body.slogan,
-		description: req.body.description
-	  });
-	  
-	  company.save(function (err) {
-	    if (err) return err;
-	    // thats it!
-	  });
+	var body = req.body;
+	Company.addPerson(body, function (err, company) {
+		if(err){
+			throw err;
+		}
+		res.json(company);
 	});
 });
 
+
+//create a receiving entity
 router.post('/receiving-entity', function (req, res) {
 	var receivingEntity = req.body;
 	ReceivingEntity.addReceivingEntity(receivingEntity, function (err, receivingEntity) {
@@ -73,6 +54,7 @@ router.post('/campaign', function (req, res) {
 		res.json(campaign);
 	});
 });
+
 
 // just for testing stuffs
 // Delete After
@@ -95,13 +77,13 @@ router.get('/person/:username', function (req, res) {
 	});
 });
 
-// Get User
-router.get('/person/:username', function (req, res) {
-	Person.getPersonByUsername(req.params.username, function (err, user) {
+// Get Company
+router.get('/company/:username', function (req, res) {
+	Company.getCompanyByUsername(req.params.username, function (err, company) {
 		if(err){
 			throw err;
 		}
-		res.json(user);
+		res.json(company);
 	});
 });
 
@@ -125,7 +107,7 @@ router.get('/Campaigns', function (req, res) {
 	}, 20);
 });
 
-// Get Receiving Entity
+// Get Nearby Campaigns
 router.get('/Campaigns?nearby=:city', function (req, res) {
 	Campaign.getNearbyCampaigns(req.params.city, function (err, campaigns) {
 		if(err){
@@ -134,4 +116,17 @@ router.get('/Campaigns?nearby=:city', function (req, res) {
 		res.json(campaigns);
 	}, 20);
 });
+
+
+// Get Nearby Campaigns
+router.get('/Campaigns/recommended', function (req, res) {
+	var userid = '587e5703901ad433650db058'; //get user by session
+	Campaign.getRecommendedCampaigns(userid, function (err, campaigns) {
+		if(err){
+			throw err;
+		}
+		res.json(campaigns);
+	}, 20);
+});
+
 module.exports = router;
