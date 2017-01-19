@@ -6,6 +6,7 @@ var Company = require('../app/model/company.js');
 var ReceivingEntity = require('../app/model/receivingEntity.js');
 var Campaign = require('../app/model/campaign.js');
 var Update = require('../app/model/update');
+var Comment = require('../app/model/comment');
 
 
 /* GET home page. */
@@ -100,6 +101,16 @@ router.get('/receiving-entity/:username', function (req, res) {
 });
 
 // Get Receiving Entity
+router.get('/campaigns/:id', function (req, res) {
+	Campaign.getCampaignById(req.params.id, function (err, campaign) {
+		if(err){
+			throw err;
+		}
+		res.json(campaign);
+	});
+});
+
+// Get Receiving Entity
 router.get('/campaigns', function (req, res) {
 	Campaign.getAllCampaigns(function (err, campaigns) {
 		if(err){
@@ -152,15 +163,36 @@ router.get('/campaigns/category/:category', function (req, res) {
 	});
 });
 
-
-//Add update to campaign
-router.post('/campaign/:id/update', function (req, res) {
-	var update = req.body;
-	Update.addUpdate(update, function (err, update) {
+//like Campaign
+router.get('/campaigns/:id/like', function (req, res) {
+	var idUser = req.headers.userid; //person id
+	Campaign.likeCampaign(req.params.id, idUser, function (err, campaign) {
 		if(err){
 			throw err;
 		}
-		Campaign.update({ _id: req.params.id }, { $push: { updates: update._id }}, function (err, campaign) {
+		res.json(campaign);
+	});
+});
+
+//dislike Campaign
+router.get('/campaigns/:id/dislike', function (req, res) {
+	var idUser = req.headers.userid; //person id
+	Campaign.dislikeCampaign(req.params.id, idUser, function (err, campaign) {
+		if(err){
+			throw err;
+		}
+		res.json(campaign);
+	});
+});
+
+//Comment Campaign
+router.post('/campaigns/:id/comment', function (req, res) {
+	var idUser = req.headers.userid; //person id
+	Comment.addComment(req.body.text, idUser, function (err, comment) {
+		if(err){
+			throw err;
+		}
+		Campaign.commentCampaign(req.params.id, comment._id, function (err, campaign) {
 			if(err){
 				throw err;
 			}
@@ -169,6 +201,38 @@ router.post('/campaign/:id/update', function (req, res) {
 	});
 });
 
+
+//Add update to campaign
+router.post('/campaigns/:id/update', function (req, res) {
+	var update = req.body;
+	Update.addUpdate(update, function (err, update) {
+		if(err){
+			throw err;
+		}
+		Campaign.addUpdate(req.params.id, update._id, function (err, campaign) {
+			if(err){
+				throw err;
+			}
+			res.json(campaign);
+		});
+	});
+});
+
+//Comment an update
+router.post('/campaigns/:idCampaign/update/:idUpdate/comment', function (req, res) {
+	var idUser = req.headers.userid; //person id
+	Comment.addComment(req.body.text, idUser, function (err, comment) {
+		if(err){
+			throw err;
+		}
+		Update.commentUpdate(req.params.idUpdate, comment._id, function (err, update) {
+			if(err){
+				throw err;
+			}
+			res.json(update);
+		});
+	});
+});
 
 
 module.exports = router;

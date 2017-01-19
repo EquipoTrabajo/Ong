@@ -36,6 +36,9 @@ var userSchema = new Schema({
 	},
 	level: {
 		type: Number
+	},
+	type: {
+		type: String
 	}
 });
 

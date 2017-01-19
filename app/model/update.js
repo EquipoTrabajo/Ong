@@ -26,7 +26,12 @@ var updateSchema = new Schema({
 
 var Update = module.exports = mongoose.model('Update', updateSchema);
 
-// Add Campaign
+// Add Update to the update collection
 module.exports.addUpdate = function (update, callback) {
 	Update.create(update, callback);
+}
+
+// Add a comment to the comment array in the update collection
+module.exports.commentUpdate = function (idUpdate, idComment, callback) {
+	Update.update({ _id: idUpdate }, { $push: { comment: idComment }}, callback);
 }

@@ -106,9 +106,29 @@ module.exports.addCampaign = function (campaign, callback) {
 	Campaign.create(campaign, callback);
 }
 
-// Like Campaign
-module.exports.likeCampaign = function (idcampaign, iduser, callback) {
-	//Campaign.create(campaign, callback);
+// Add udpate to the campaign array
+module.exports.addUpdate = function (idCampaign, idUpdate, callback) {
+	Campaign.update({ _id: idCampaign }, { $push: { updates: idUpdate }}, callback);
+}
+
+// Add person who like to the likes array in the campaign collection
+module.exports.likeCampaign = function (idCampaign, idPerson, callback) {
+	Campaign.update({ _id: idCampaign }, { $push: { likes: idPerson }}, callback);
+}
+
+// Add person who dislike to the dislikes array in the campaign collection
+module.exports.dislikeCampaign = function (idCampaign, idPerson, callback) {
+	Campaign.update({ _id: idCampaign }, { $push: { dislikes: idPerson }}, callback);
+}
+
+// Add person who like to the likes array in the campaign collection
+module.exports.commentCampaign = function (idCampaign, idComment, callback) {
+	Campaign.update({ _id: idCampaign }, { $push: { comments: idComment }}, callback);
+}
+
+// Get Campaigns
+module.exports.getCampaignById = function (id, callback) {
+	Campaign.findById(id).populate(['volunteers', 'donors', 'comments']).exec(callback);
 }
 
 
