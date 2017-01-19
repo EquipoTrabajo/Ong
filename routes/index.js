@@ -5,6 +5,8 @@ var Person = require('../app/model/person.js');
 var Company = require('../app/model/company.js');
 var ReceivingEntity = require('../app/model/receivingEntity.js');
 var Campaign = require('../app/model/campaign.js');
+var Update = require('../app/model/update');
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -98,7 +100,7 @@ router.get('/receiving-entity/:username', function (req, res) {
 });
 
 // Get Receiving Entity
-router.get('/Campaigns', function (req, res) {
+router.get('/campaigns', function (req, res) {
 	Campaign.getAllCampaigns(function (err, campaigns) {
 		if(err){
 			throw err;
@@ -108,7 +110,7 @@ router.get('/Campaigns', function (req, res) {
 });
 
 // Get Nearby Campaigns
-router.get('/Campaigns?nearby=:city', function (req, res) {
+router.get('/campaigns/nearby=:city', function (req, res) {
 	Campaign.getNearbyCampaigns(req.params.city, function (err, campaigns) {
 		if(err){
 			throw err;
@@ -119,8 +121,8 @@ router.get('/Campaigns?nearby=:city', function (req, res) {
 
 
 // Get recommended Campaigns
-router.get('/Campaigns/recommended', function (req, res) {
-	var userid = '587e5703901ad433650db058'; //get user by session
+router.get('/campaigns/recommended', function (req, res) {
+	var userid = req.headers.userid; //person id
 	Campaign.getRecommendedCampaigns(userid, function (err, campaigns) {
 		if(err){
 			throw err;
@@ -130,8 +132,8 @@ router.get('/Campaigns/recommended', function (req, res) {
 });
 
 // Get friends Campaigns
-router.get('/Campaigns/friends', function (req, res) {
-	var userid = '587e5703901ad433650db058'; //get user by session
+router.get('/campaigns/friends', function (req, res) {
+	var userid = req.headers.userid; //person id
 	Campaign.getFriendsDonatedCampaigns(userid, function (err, campaigns) {
 		if(err){
 			throw err;
@@ -141,12 +143,29 @@ router.get('/Campaigns/friends', function (req, res) {
 });
 
 // Get category Campaigns
-router.get('/Campaigns/category/:category', function (req, res) {
+router.get('/campaigns/category/:category', function (req, res) {
 	Campaign.getCampaignsByCategory(req.params.category, function (err, campaigns) {
 		if(err){
 			throw err;
 		}
 		res.json(campaigns);
+	});
+});
+
+
+//Add update to campaign
+router.post('/campaign/:id/update', function (req, res) {
+	var update = req.body;
+	Update.addUpdate(update, function (err, update) {
+		if(err){
+			throw err;
+		}
+		Campaign.update({ _id: req.params.id }, { $push: { updates: update._id }}, function (err, campaign) {
+			if(err){
+				throw err;
+			}
+			res.json(campaign);
+		});
 	});
 });
 

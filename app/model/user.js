@@ -49,3 +49,8 @@ var User = module.exports = mongoose.model('User', userSchema);
 module.exports.addUser = function (user, callback) {
 	User.create(user, callback);
 }
+
+
+module.exports.getUserById = function (id, callback) {
+	User.findById(id, callback);
+}

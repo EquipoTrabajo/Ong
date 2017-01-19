@@ -91,6 +91,9 @@ var campaignSchema = new Schema({
 	}],
 	comments: [{
 		type: Schema.Types.ObjectId, ref: 'Comment'
+	}],
+	updates: [{
+		type: Schema.Types.ObjectId, ref: 'Update'
 	}]
 });
 
@@ -129,7 +132,6 @@ module.exports.getRecommendedCampaigns = function (id, callback, limit) {
 					creators.push(campaigns[camp].creators[i]);
 				}
 			}
-			console.log(creators);
 			Campaign.find({'creators': {$in: creators}, '_id': {$nin: tempCampId}, 'priority': {$gt: 0}, 'start_date': {$lt: Date.now()}, 'end_date': {$gt: Date.now()}}, callback);
 		});
 	});
@@ -160,12 +162,12 @@ module.exports.getFriendsDonatedCampaigns = function (id, callback) {
 				}
 			}
 			console.log(tempCampId);
-			Campaign.find({'_id': {$in: tempCampId}}, callback);
+			Campaign.find({'_id': {$in: tempCampId}, 'start_date': {$lt: Date.now()}, 'end_date': {$gt: Date.now()}}, callback);
 		});
 	});
 }
 
 // Get Campaigns by category
 module.exports.getCampaignsByCategory = function (category, callback) {
-	Campaign.find({'category': category}).populate(['volunteers', 'donors']).sort({start_date: -1}).exec(callback);
+	Campaign.find({'category': category, 'start_date': {$lt: Date.now()}, 'end_date': {$gt: Date.now()}}).populate(['volunteers', 'donors']).sort({start_date: -1}).exec(callback);
 }

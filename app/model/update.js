@@ -24,4 +24,9 @@ var updateSchema = new Schema({
 	}]
 });
 
-var Comment = module.exports = mongoose.model('Comment', commentSchema);
+var Update = module.exports = mongoose.model('Update', updateSchema);
+
+// Add Campaign
+module.exports.addUpdate = function (update, callback) {
+	Update.create(update, callback);
+}
