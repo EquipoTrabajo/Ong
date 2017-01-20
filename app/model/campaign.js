@@ -1,5 +1,8 @@
 var mongoose = require('mongoose');
+
 var Person = require('./person');
+var Donation = require('./donation');
+
 var Schema = mongoose.Schema;
 
 var campaignSchema = new Schema({
@@ -69,19 +72,19 @@ var campaignSchema = new Schema({
 		type: Number
 	},
 	likes: [{
-		type: Schema.Types.ObjectId, ref:'User'
+		type: Schema.Types.ObjectId, ref:'Person'
 	}],
 	dislikes: [{
-		type: Schema.Types.ObjectId, ref:'User'
+		type: Schema.Types.ObjectId, ref:'Person'
 	}],
 	shares: [{
-		type: Schema.Types.ObjectId, ref:'User'
+		type: Schema.Types.ObjectId, ref:'Person'
 	}],
 	donors: [{
 		type: Schema.Types.ObjectId, ref:'User'
 	}],
 	volunteers: [{
-		type: Schema.Types.ObjectId, ref:'User'
+		type: Schema.Types.ObjectId, ref:'Person'
 	}],
 	certificates_list: [{
 		type: String
@@ -94,7 +97,10 @@ var campaignSchema = new Schema({
 	}],
 	updates: [{
 		type: Schema.Types.ObjectId, ref: 'Update'
-	}]
+	}],
+	validated: {
+		type: Schema.Types.ObjectId, ref: 'ReceivingEntity'
+	}
 });
 
 
@@ -106,9 +112,22 @@ module.exports.addCampaign = function (campaign, callback) {
 	Campaign.create(campaign, callback);
 }
 
+// validate campaign
+module.exports.validateCampaign = function (idCampaign, idReceivingEntity, callback) {
+	Campaign.update({ _id: idCampaign }, { $set: { validated: idReceivingEntity }}, callback);
+}
+
 // Add udpate to the campaign array
 module.exports.addUpdate = function (idCampaign, idUpdate, callback) {
 	Campaign.update({ _id: idCampaign }, { $push: { updates: idUpdate }}, callback);
+}
+
+// Add volunteer
+module.exports.addVolunteer = function (idCampaign, idPerson, callback) {
+	Campaign.update({ _id: idCampaign }, { $push: { volunteers: idPerson }}, function (err, campaign) {
+		if (err) {throw err};
+		//TODO
+	});
 }
 
 // Add person who like to the likes array in the campaign collection
@@ -190,4 +209,20 @@ module.exports.getFriendsDonatedCampaigns = function (id, callback) {
 // Get Campaigns by category
 module.exports.getCampaignsByCategory = function (category, callback) {
 	Campaign.find({'category': category, 'start_date': {$lt: Date.now()}, 'end_date': {$gt: Date.now()}}).populate(['volunteers', 'donors']).sort({start_date: -1}).exec(callback);
+}
+
+
+// Add a comment to the collection
+module.exports.addDonation = function (body, idCampaign, idPerson, callback) {
+	Donation.addDonation(body, function (err, donation) {
+		if(err){
+			throw err;
+		}
+		Person.addDonatedCampaign(idPerson, idCampaign, function (err, person) {
+			if(err){
+				throw err;
+			}
+		});
+		Campaign.update({ _id: idCampaign }, { $push: { donations: donation._id }}, callback);
+	});
 }

@@ -32,6 +32,9 @@ var personSchema = new Schema({
 	followed_companies: [{
 		type: Schema.Types.ObjectId, ref: 'Company'
 	}],
+	followed_receivingEntities: [{
+		type: Schema.Types.ObjectId, ref: 'ReceivingEntity'
+	}],
 	donated_campaigns: [{
 		type: Schema.Types.ObjectId, ref: 'Campaign'
 	}],
@@ -55,11 +58,11 @@ var personSchema = new Schema({
 var Person = module.exports = mongoose.model('Person', personSchema);
 
 // Add Person
-module.exports.addPerson = function (person, callback) {
-	var user = person.user;
+module.exports.addPerson = function (body, callback) {
+	var user = body.user;
 	User.addUser(user, function (err, user) {
 		if (err) {throw err};
-		var p = person.person;
+		var p = body.person;
 		p["userid"] = user._id;
 		Person.create(p, callback);
 	});
@@ -70,6 +73,40 @@ module.exports.getPersonByUsername = function (username, callback) {
 	Person.findOne({'username': username}).populate('userid').exec(callback);
 }
 
+// Get User
+module.exports.getPersonById = function (id, callback) {
+	Person.findById(id).populate('userid').exec(function (err, person) {
+		if(err){
+			throw err;
+		}else {
+			return person;
+		}
+	});
+}
+
+module.exports.addDonatedCampaign = function (idPerson, idCampaign, callback) {
+	Person.update({ _id: idPerson }, { $push: { donated_campaigns: idCampaign }}, callback);
+}
+
+//follow Person
+module.exports.addFollowedPerson = function (idPerson, idFollow, callback) {
+	Person.update({ _id: idPerson }, { $push: { followed_people: idFollow }}, callback);
+}
+
+//follow Campaign
+module.exports.addFollowedCompany = function (idPerson, idFollow, callback) {
+	Person.update({ _id: idPerson }, { $push: { followed_companies: idFollow }}, callback);
+}
+
+//follow Campaign
+module.exports.addFollowedReceivingEntity = function (idPerson, idFollow, callback) {
+	Person.update({ _id: idPerson }, { $push: { followed_receivingEntities: idFollow }}, callback);
+}
+
+//Add Donation Certificate
+module.exports.addDonationCertificate = function (idPerson, certificate, callback) {
+	Person.update({ _id: idPerson }, { $push: { donation_certificate: certificate }}, callback);
+}
 
 // Get User
 module.exports.getUserOfLikedCampaign = function (id, callback) {

@@ -58,3 +58,8 @@ module.exports.addReceivingEntity = function (receivingEntity, callback) {
 		ReceivingEntity.create(re, callback);
 	});
 }
+
+
+module.exports.addReview = function (idReceivingEntity, idReview, callback) {
+	ReceivingEntity.update({ _id: idReceivingEntity }, { $push: { reviews: idReview }}, callback);
+}

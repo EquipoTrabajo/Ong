@@ -36,6 +36,12 @@ module.exports.addCompany = function (body, callback) {
 	});
 }
 
+//Add Admin
+module.exports.addAdmin = function (idCompany, idPerson, callback) {
+	Company.update({ _id: idCompany }, { $push: { admins: idPerson }}, callback);
+}
+
+
 // Get Company
 module.exports.getCompanyByUsername = function (username, callback) {
 	Company.findOne({'username': username}).populate('userid').exec(callback);
