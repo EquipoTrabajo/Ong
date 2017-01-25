@@ -19,5 +19,5 @@ var Donation = module.exports = mongoose.model('Donation', donationSchema);
 
 // Add a comment to the collection
 module.exports.addDonation = function (amount, idUser, callback) {
-	Comment.create({amount: amount, user: idUser}, callback);
+	Donation.create({amount: amount, user: idUser}, callback);
 }

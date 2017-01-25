@@ -8,12 +8,10 @@ var Campaign = require('../app/model/campaign.js');
 var Update = require('../app/model/update');
 var Comment = require('../app/model/comment');
 var Review = require('../app/model/review');
+var Acknowledgment = require('../app/model/acknowledgment');
+var Activity = require('../app/model/activity');
 
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
 
 //CREATE PERSON TO THE DATABASE
 router.post('/person', function (req, res, next) {
@@ -65,16 +63,6 @@ router.post('/campaign', function (req, res) {
 	});
 });
 
-
-// just for testing stuffs
-// Delete After
-router.post('/testing', function (req, res) {
-	var temp = req.body.g1;
-	temp["g1f3"] = "v3";
-	res.json(temp);
-});
-
-
 //GET'S
 
 // Get User
@@ -84,6 +72,18 @@ router.get('/person/:username', function (req, res) {
 			throw err;
 		}
 		res.json(user);
+	});
+});
+
+
+//get person activities
+
+router.get('/person/:username', function (req, res) {
+	Activity.getActivities(req.params.username, function (err, activities) {
+		if(err){
+			throw err;
+		}
+		res.json(activities);
 	});
 });
 
@@ -120,11 +120,14 @@ router.get('/receiving-entity/:username', function (req, res) {
 
 // Get Receiving Entity
 router.get('/campaigns/:id', function (req, res) {
+	var idPerson = req.headers.usertypeid;
 	Campaign.getCampaignById(req.params.id, function (err, campaign) {
 		if(err){
 			throw err;
 		}
-		res.json(campaign);
+		Person.addSeenCampaign(idPerson, req.params.id, function (err, person) {
+			res.json(campaign);
+		});
 	});
 });
 
@@ -139,19 +142,19 @@ router.get('/campaigns', function (req, res) {
 });
 
 // Get Nearby Campaigns
-router.get('/campaigns/nearby=:city', function (req, res) {
+router.get('/campaigns/nearby/:city', function (req, res) {
 	Campaign.getNearbyCampaigns(req.params.city, function (err, campaigns) {
 		if(err){
 			throw err;
 		}
 		res.json(campaigns);
-	}, 20);
+	});
 });
 
 
 // Get recommended Campaigns
-router.get('/campaigns/recommended', function (req, res) {
-	var userid = req.headers.userid; //person id
+router.get('/campaigns/recommended/search', function (req, res) {
+	var userid = req.headers.usertypeid; //person id
 	Campaign.getRecommendedCampaigns(userid, function (err, campaigns) {
 		if(err){
 			throw err;
@@ -161,8 +164,8 @@ router.get('/campaigns/recommended', function (req, res) {
 });
 
 // Get friends Campaigns
-router.get('/campaigns/friends', function (req, res) {
-	var userid = req.headers.userid; //person id
+router.get('/campaigns/friends/search', function (req, res) {
+	var userid = req.headers.usertypeid; //person id
 	Campaign.getFriendsDonatedCampaigns(userid, function (err, campaigns) {
 		if(err){
 			throw err;
@@ -178,6 +181,16 @@ router.get('/campaigns/category/:category', function (req, res) {
 			throw err;
 		}
 		res.json(campaigns);
+	});
+});
+
+//Get Acknowledgments
+router.get('/acknowledgments', function (req, res) {
+	Acknowledgment.getAcknowledgments(req.headers.usertypeid, function (err, acknowledgment) {
+		if(err){
+			throw err;
+		}
+		res.json(acknowledgment);
 	});
 });
 
@@ -203,7 +216,12 @@ router.post('/campaigns/:id/like', function (req, res) {
 			if(err){
 				throw err;
 			}
-			res.json(campaign);
+			Activity.addActity(idUser, req.params.id, 'likes', function (err) {
+				if(err){
+					throw err;
+				}
+				res.json(campaign);
+			});
 		});
 	});
 });
@@ -221,8 +239,8 @@ router.post('/campaigns/:id/dislike', function (req, res) {
 
 //Comment Campaign
 router.post('/campaigns/:id/comment', function (req, res) {
-	var idUser = req.headers.userid; //person id
-	Comment.addComment(req.body.text, idUser, function (err, comment) {
+	var idPerson = req.headers.usertypeid;
+	Comment.addComment(req.body.text, idPerson, function (err, comment) {
 		if(err){
 			throw err;
 		}
@@ -252,23 +270,62 @@ router.post('/campaigns/:id/update', function (req, res) {
 	});
 });
 
+//like update
+router.post('/update/:id/like', function (req, res) {
+	var idPerson = req.headers.usertypeid;
+	Update.likeUpdate(req.params.id, idPerson, function (err, update) {
+		res.json(update);
+	});
+});
+
+//dislike update
+router.post('/update/:id/dislike', function (req, res) {
+	var idPerson = req.headers.usertypeid;
+	Update.dislikeUpdate(req.params.id, idPerson, function (err, update) {
+		res.json(update);
+	});
+});
+
 //Donate campaign
 router.post('/campaigns/:id/donate', function (req, res) {
 	var idUser = req.headers.userid;
 	var idPerson = req.headers.usertypeid;
-	var body = req.body;
-	Campaign.addDonation(body, req.params.id, idPerson, function (err, campaign) {
+	//var body = req.body;
+	Campaign.addDonation(req.body.amount, req.params.id, idUser, idPerson, function (err, campaign) {
 		if(err){
 			throw err;
 		}
-		res.json(campaign);
+		Activity.addActity(idPerson, req.params.id, 'donates', function (err) {
+			if(err){
+				throw err;
+			}
+			res.json(campaign);
+		});
+	});
+});
+
+//Volunteer campaign
+router.post('/campaigns/:id/volunteer', function (req, res) {
+	var idUser = req.headers.userid;
+	var idPerson = req.headers.usertypeid;
+	//var body = req.body;
+	Campaign.addVolunteer(req.params.id, idPerson, function (err, campaign) {
+		if(err){
+			throw err;
+		}
+		Activity.addActity(idPerson, req.params.id, 'volunteers', function (err) {
+			if(err){
+				throw err;
+			}
+			res.json(campaign);
+		});
 	});
 });
 
 //Comment an update
-router.post('/campaigns/:idCampaign/update/:idUpdate/comment', function (req, res) {
-	var idUser = req.headers.userid; //person id
-	Comment.addComment(req.body.text, idUser, function (err, comment) {
+router.post('/update/:idUpdate/comment', function (req, res) {
+	var idPerson = req.headers.usertypeid; //person id
+	Comment.addComment(req.body.text, idPerson, function (err, comment) {
 		if(err){
 			throw err;
 		}
@@ -297,6 +354,23 @@ router.post('/receiving-entity/:idReceivingEntity/review', function (req, res) {
 				throw err;
 			}
 			res.json(receivingEntity);
+		});
+	});
+});
+
+
+//comment review
+router.post('/review/:idReview/comment', function (req, res) {
+	var idPerson = req.headers.usertypeid; //person id
+	Comment.addComment(req.body.text, idPerson, function (err, comment) {
+		if(err){
+			throw err;
+		}
+		Review.commentReview(req.params.idReview, comment._id, function (err, review) {
+			if(err){
+				throw err;
+			}
+			res.json(review);
 		});
 	});
 });
@@ -337,6 +411,52 @@ router.post('/person/:idPerson/follow', function (req, res) {
 });
 
 
+//Add Acknowledgment Person
+router.post('/person/:idPerson/acknowledgment', function (req, res) {
+	var idPerson = req.params.idPerson;
+	req.body.person = idPerson;
+	Acknowledgment.addAcknowledgment(req.body, function (err, acknowledgment) {
+		if(err){
+			throw err;
+		}
+		res.json(acknowledgment);
+	});
+});
+
+
+//like Adcknowledgment
+router.post('/acknowledgment/:id/like', function (req, res) {
+	var idPerson = req.headers.usertypeid;
+	Acknowledgment.likeAcknowledgment(req.params.id, idPerson, function (err, acknowledgment) {
+		res.json(acknowledgment);
+	});
+});
+
+//dislike Adcknowledgment
+router.post('/acknowledgment/:id/dislike', function (req, res) {
+	var idPerson = req.headers.usertypeid;
+	Acknowledgment.dislikeAcknowledgment(req.params.id, idPerson, function (err, acknowledgment) {
+		res.json(acknowledgment);
+	});
+});
+
+//Comment acknowlegment
+router.post('/acknowledgment/:id/comment', function (req, res) {
+	var idPerson = req.headers.usertypeid;
+	Comment.addComment(req.body.text, idPerson, function (err, comment) {
+		if(err){
+			throw err;
+		}
+		Acknowledgment.commentAcknowledgment(req.params.id, comment._id, function (err, acknowlegment) {
+			if(err){
+				throw err;
+			}
+			res.json(acknowlegment);
+		});
+	});
+});
+
+
 //Add donation certificate
 router.post('/person/add/certificate', function (req, res) {
 	var idPerson = req.headers.usertypeid;
@@ -345,6 +465,24 @@ router.post('/person/add/certificate', function (req, res) {
 			throw err;
 		}
 		res.json(person);
+	});
+});
+
+
+
+//like Comment
+router.post('/comment/:id/like', function (req, res) {
+	var idPerson = req.headers.usertypeid;
+	Comment.likeComment(req.params.id, idPerson, function (err, comment) {
+		res.json(comment);
+	});
+});
+
+//dislike Comment
+router.post('/comment/:id/dislike', function (req, res) {
+	var idPerson = req.headers.usertypeid;
+	Comment.dislikeComment(req.params.id, idPerson, function (err, comment) {
+		res.json(comment);
 	});
 });
 

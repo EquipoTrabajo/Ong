@@ -45,7 +45,7 @@ var ReceivingEntity = module.exports = mongoose.model('ReceivingEntity', receivi
 
 // Get Receiving Entity
 module.exports.getRecievingEntityByUsername = function (username, callback) {
-	ReceivingEntity.findOne({'username': username}).populate('userid').exec(callback);
+	ReceivingEntity.findOne({'username': username}).populate(['userid', 'reviews']).exec(callback);
 }
 
 // Add Receiving Entity
