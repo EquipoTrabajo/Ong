@@ -84,6 +84,15 @@ module.exports.getPersonById = function (id, callback) {
 	});
 }
 
+module.exports.addVolunteeredCampaign = function (idPerson, idCampaign, callback) {
+	Person.update({ _id: idPerson }, { $push: { volunteer_campaigns: idCampaign }}, callback);
+}
+
+//Seen Campaigns
+module.exports.addSeenCampaign = function (idPerson, idCampaign, callback) {
+	Person.update({ _id: idPerson }, { $push: { seen_campaigns: idCampaign }}, callback);
+}
+
 module.exports.addDonatedCampaign = function (idPerson, idCampaign, callback) {
 	Person.update({ _id: idPerson }, { $push: { donated_campaigns: idCampaign }}, callback);
 }

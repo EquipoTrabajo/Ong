@@ -4,10 +4,10 @@ var Schema = mongoose.Schema;
 
 var updateSchema = new Schema({
 	likes: [{
-		type: Schema.Types.ObjectId, ref: 'User'
+		type: Schema.Types.ObjectId, ref: 'Person'
 	}],
 	dislikes: [{
-		type: Schema.Types.ObjectId, ref: 'User'
+		type: Schema.Types.ObjectId, ref: 'Person'
 	}],
 	picture: {
 		type: String
@@ -31,7 +31,19 @@ module.exports.addUpdate = function (update, callback) {
 	Update.create(update, callback);
 }
 
+
+// Add person to the likes array
+module.exports.likeUpdate = function (idUpdate, idPerson, callback) {
+	Update.update({ _id: idUpdate }, { $push: { likes: idPerson }}, callback);
+}
+
+// Add person to the dislikes array
+module.exports.dislikeUpdate = function (idUpdate, idPerson, callback) {
+	Update.update({ _id: idUpdate }, { $push: { dislikes: idPerson }}, callback);
+}
+
 // Add a comment to the comment array in the update collection
 module.exports.commentUpdate = function (idUpdate, idComment, callback) {
 	Update.update({ _id: idUpdate }, { $push: { comment: idComment }}, callback);
 }
+

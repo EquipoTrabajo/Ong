@@ -44,5 +44,5 @@ module.exports.addAdmin = function (idCompany, idPerson, callback) {
 
 // Get Company
 module.exports.getCompanyByUsername = function (username, callback) {
-	Company.findOne({'username': username}).populate('userid').exec(callback);
+	Company.findOne({'username': username}).populate(['userid', 'admins']).exec(callback);
 }

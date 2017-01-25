@@ -126,7 +126,7 @@ module.exports.addUpdate = function (idCampaign, idUpdate, callback) {
 module.exports.addVolunteer = function (idCampaign, idPerson, callback) {
 	Campaign.update({ _id: idCampaign }, { $push: { volunteers: idPerson }}, function (err, campaign) {
 		if (err) {throw err};
-		//TODO
+		Person.addVolunteeredCampaign(idPerson, idCampaign, callback);
 	});
 }
 
@@ -147,18 +147,18 @@ module.exports.commentCampaign = function (idCampaign, idComment, callback) {
 
 // Get Campaigns
 module.exports.getCampaignById = function (id, callback) {
-	Campaign.findById(id).populate(['volunteers', 'donors', 'comments']).exec(callback);
+	Campaign.findById(id).populate(['volunteers', 'donors', 'comments', 'updates']).exec(callback);
 }
 
 
 // Get Campaigns
 module.exports.getAllCampaigns = function (callback, limit) {
-	Campaign.find().populate(['volunteers', 'donors']).exec(callback);
+	Campaign.find().populate(['volunteers', 'donors', 'comments', 'updates']).exec(callback);
 }
 
 // Get Campaigns
 module.exports.getRecommendedCampaigns = function (id, callback, limit) {
-	Person.getUserOfLikedCampaign(id, function (err, person) {
+	Person.findById(id, function (err, person) {
 		if(err){
 			throw err;
 		}
@@ -177,8 +177,8 @@ module.exports.getRecommendedCampaigns = function (id, callback, limit) {
 }
 
 // Get Campaigns
-module.exports.getNearbyCampaigns = function (user, callback, limit) {
-	Campaign.find({'address.city': user}).populate(['volunteers', 'donors']).exec(callback);
+module.exports.getNearbyCampaigns = function (user, callback) {
+	Campaign.find({'address.city': user, 'start_date': {$lt: Date.now()}, 'end_date': {$gt: Date.now()}}).populate(['volunteers', 'donors', 'comments', 'updates']).exec(callback);
 }
 
 // Get Campaigns
@@ -208,13 +208,13 @@ module.exports.getFriendsDonatedCampaigns = function (id, callback) {
 
 // Get Campaigns by category
 module.exports.getCampaignsByCategory = function (category, callback) {
-	Campaign.find({'category': category, 'start_date': {$lt: Date.now()}, 'end_date': {$gt: Date.now()}}).populate(['volunteers', 'donors']).sort({start_date: -1}).exec(callback);
+	Campaign.find({'category': category, 'start_date': {$lt: Date.now()}, 'end_date': {$gt: Date.now()}}).populate(['volunteers', 'donors', 'comments', 'updates']).sort({start_date: -1}).exec(callback);
 }
 
 
 // Add a comment to the collection
-module.exports.addDonation = function (body, idCampaign, idPerson, callback) {
-	Donation.addDonation(body, function (err, donation) {
+module.exports.addDonation = function (amount, idCampaign, idUser, idPerson, callback) {
+	Donation.addDonation(amount, idUser, function (err, donation) {
 		if(err){
 			throw err;
 		}

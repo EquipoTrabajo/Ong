@@ -28,3 +28,8 @@ var Review = module.exports = mongoose.model('Review', reviewSchema);
 module.exports.addReview = function (body, callback) {
 	Review.create(body, callback);
 }
+
+// Add a comment to the comment array
+module.exports.commentReview = function (idReview, idComment, callback) {
+	Review.update({ _id: idReview }, { $push: { comment: idComment }}, callback);
+}

@@ -11,12 +11,22 @@ var activitySchema = new Schema({
 	},
 	activity: {
 		type: String
+	},
+	created_at: {
+		type: Date,
+		default: Date.now
 	}
 });
 
 var Activity = module.exports = mongoose.model('Activity', activitySchema);
 
 // Add Activity
-module.exports.addActity = function (body, callback) {
-	Activity.create(body, callback);
+module.exports.addActity = function (idPerson, idCampaign, activity, callback) {
+	Activity.create({person: idPerson, campaign: idCampaign, activity: activity}, callback);
+}
+
+
+// Add Activity
+module.exports.getActivities = function (idPerson, callback) {
+	Activity.find({person: idPerson}).populate(['person', 'campaign']).exec(callback);
 }

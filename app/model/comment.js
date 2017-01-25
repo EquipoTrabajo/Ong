@@ -30,3 +30,14 @@ var Comment = module.exports = mongoose.model('Comment', commentSchema);
 module.exports.addComment = function (textComment, idUser, callback) {
 	Comment.create({text: textComment, user: idUser}, callback);
 }
+
+
+// Add person to the likes array
+module.exports.likeComment = function (idComment, idPerson, callback) {
+	Comment.update({ _id: idComment }, { $push: { likes: idPerson }}, callback);
+}
+
+// Add person to the dislikes array
+module.exports.dislikeComment = function (idComment, idPerson, callback) {
+	Comment.update({ _id: idComment }, { $push: { dislikes: idPerson }}, callback);
+}
