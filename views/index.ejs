@@ -1,11 +1,159 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= title %></title>
+    <title>Ong</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+ 
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v2.8&appId=1244247258997804";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+    <h1> title </h1>
+    <p>Welcome to </p>
+    <a href="#" id="login" class="btn btn-primary">Continuar con Facebook</a>
+   
+
+    <script type="text/javascript">
+    	$(function() {
+
+	var app_id = '1244247258997804';
+	var scopes = 'email, user_friends, user_online_presence';
+
+	var btn_login = '<div id="fb-login-button" class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="false">Facebook</div>';
+
+	var div_session = "<div id='facebook-session'>"+
+					  "<strong></strong>"+
+					  "<img>"+
+					  "<a href='#' id='logout' class='btn btn-danger'>Cerrar sesión</a>"+
+					  "</div>";
+
+	window.fbAsyncInit = function() {
+
+	  	FB.init({
+	    	appId      : app_id,
+	    	status     : true,
+	    	cookie     : true, 
+	    	xfbml      : true, 
+	    	version    : 'v2.8'
+	  	});
+
+
+	  	FB.getLoginStatus(function(response) {
+        alert('al cargar la pagina cargamos el fbloginstatu para comrpobar si el usuario esta logeado en facebook y me devuelve el json con los datos de: (acces token, tiempo limite, el id del usuario y el status si esta conectado) , revisalo en el console de la web');
+	    	statusChangeCallback(response, function() {});
+	  	});
+  	};
+
+  	var statusChangeCallback = function(response, callback) {
+  		console.log(response);
+   		alert('entro a status changes');
+    	if (response.status === 'connected') {
+      		getFacebookData();
+    	} else {
+     		callback(false);
+    	}
+  	}
+
+  	var checkLoginState = function(callback) {
+       console.log('entro a  login state' );
+    	FB.getLoginStatus(function(response) {
+      		callback(response);
+    	});
+  	}
+
+  	var getFacebookData =  function() {
+         alert('en esta parte como ya valide que esta conectado, a traves del facebookgrafh capturo la información del usuario, esta depende que que permisos me ha dado el usuario al momento de usar mi app tomar en cuenta siempre los permisos que tengo, puedo realizar en este momento como tengo el perfil publico datos basicos revisar el json del console');
+  		FB.api('/me', function(response) {
+  			console.log(response);
+	  		$('#btn_login').after(div_session);        
+	  		$('#btn_login').remove();
+	  		$('#facebook-session strong').text("Bienvenido: "+response.name);
+	  		$('#facebook-session img').attr('src','http://graph.facebook.com/'+response.id+'/picture?type=large');
+	  	});
+  	}
+
+
+
+  	var facebookLogin = function() {
+      console.log('entro a facebok login');
+  		checkLoginState(function(data) {
+         console.log('entro a  login state' + data);
+  			if (data.status !== 'connected') {
+                        FB.login(function(response) {
+                           if (response.status === 'connected') {
+                            console.log(' entrara al api ');
+                                          
+                                       
+                                        FB.api(
+                                          '/me',
+                                          'GET',
+                                          {"fields":"picture,first_name,gender,link,timezone"},
+                                          function(response) {
+                                              $('#login-template').after(div_session);
+                                              $('#login-template').remove();
+                                               $('#facebook-session strong').text("Bienvenido: "+response.first_name);
+                                               $('#facebook-session img').attr('src','http://graph.facebook.com/'+response.id+'/picture?type=large');
+                                            console.log('Good to see you, ' + response.name + '...' + response );
+                                          });
+                                        
+                           if (VerificaExiste===true){
+
+
+                           }else{
+                               vota
+                           }
+
+                             
+                           } else {
+                            console.log('User cancelled login or did not fully authorize.');
+                           }
+                       });
+
+  			               }
+        else { getFacebookData();}
+  		})
+  	}
+
+  	var facebookLogout = function() {
+  		checkLoginState(function(data) {
+  			if (data.status === 'connected') {
+				FB.logout(function(response) {
+					$('#facebook-session').before(fb-login-button);
+					$('#facebook-session').remove();
+				})
+			}
+  		})
+
+  	}
+
+
+
+  	$(document).on('click', '#btn_login', function(e) {
+  		e.preventDefault();
+       console.log('entro antes de facebok login');
+  		facebookLogin();
+  	})
+
+  	$(document).on('click', '#logout', function(e) {
+  		e.preventDefault();
+
+  		if (confirm("¿Está seguro?"))
+  			facebookLogout();
+  		else 
+  			return false;
+  	})
+
+})
+    </script>
+
   </body>
 </html>
