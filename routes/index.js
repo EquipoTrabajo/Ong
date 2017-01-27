@@ -23,21 +23,23 @@ FB.options({
 });
 
 //Esta función trae la información de la base de datos la devuelve con el return.
-var getFacebookData = function () {
-	FB.setAccessToken('EAARrouPipCwBAGlMsiQ1jxtUYQKd2YjdnyAkPvZCFLtrSUhdeZBNK5LE5EghXtZBht90kvJ8aHyWrBlZBFz5pZCr0CmPsWXDhUZC3CFNrC8RzR2oXCjkZCieutSlEaDRkMFllpdAFYLmfEQ00FH7tWJIARwFhb90FvdYs71SIue4AZDZD');
+var getFacebookData = function (req, res, next) {
+	FB.setAccessToken(req.body.accessToken);
 	//Los datos del token y el id de usuario se lo pase directamente mientras la pruebo
-	FB.api('153198048513340', { fields: ['id','name','cover','picture','location','gender','education','email','friends', 'likes{name,category}'] }, 
+	FB.api(req.body.userID, { fields: ['id','name','cover','picture','location','gender','education','email','friends', 'likes{name,category}'] }, 
 	function (response) {
-		console.log(response); //Está información se muestra bien, pero después de que el server me arroja el error 500
-		return response; //Esta es la información traida de facebook
+		req.body.response = response; //Esta es la información traida de facebook
+		next();
 	});
 }
 
 //Esta funcion se encarga de procesar la data traida de facebook para poder guardarla en la base de datos.
-var processFacebookData = function (response) {
+var processFacebookData = function (req, res, next) {
+	var response = req.body.response;
 	if(!response || response.error) {
 		console.log(!response ? 'error occurred' : response.error);
-		return null;
+		req.body.person = null;
+		next();
 	}
 	var address= response.location.name.split(',');
 	var person = {
@@ -63,21 +65,21 @@ var processFacebookData = function (response) {
 			"facebookid": response.id,
 			"age": 36,
 			"slogan": "Donar es mi meta",
+			"gender": response.gender,
+			"email": response.email,
 			"followed_people": response.friends.data,
 			"friend_list": []
 		}
 	};
-	console.log(person);
-	return person; //está es la información ya lista para ser enviada a la base de datos.
+	req.body.person = person; //está es la información ya lista para ser enviada a la base de datos.
+	next();
 }
 
 //está ruta la creé con el solo proposito de probar y mostrar la información de facebook pero cuando trato de mostrarlo me da un error 500
-router.get('/testing', function (req, res) {
+router.get('/testing', getFacebookData, processFacebookData,  function (req, res) {
 	//Step es una librería que se usa en la documentación del respositorio del repositorio de fb
 	//aquí la estoy probando pero no me da resultados
-	Step(getFacebookData(), function (response) {
-		res.json(processFacebookData(response)); //aquí se supone que devuelve la persona en formato, pero no lo hace.
-	});
+	res.json(req.body.person);
 });
 
 
@@ -91,8 +93,6 @@ router.get('/api/facebook/:id/:access_token', function (req, res) {
 	    console.log(!fbres ? 'error occurred' : fbres.error);
 	    return;
 	  }
-	  //console.log(res.id);
-	  //console.log(res.name);
 	  res.json(fbres);
 	});
 });
@@ -123,15 +123,14 @@ router.post('/authenticate', function(req, res) {
 });
 
 //CREATE PERSON TO THE DATABASE
-router.post('/person', function (req, res, next) {
-	var person = facebookData(req.body);
+router.post('/person', getFacebookData, processFacebookData, function (req, res, next) {
+	var person = req.body.person;
 	//var person = req.body;
-	console.log(person);
 	var fid = 'notexists';
 	if (person.person.facebookid) {
 		fid = person.person.facebookid;
 	}
-	//console.log(person.person.facebookid);
+	console.log(person.person.facebookid);
 
 	Person.findOne({'facebookid' : fid}, function (err, personfound) {
 		if(err){
@@ -147,6 +146,17 @@ router.post('/person', function (req, res, next) {
 				res.json(person);
 			});
 		}
+	});
+});
+
+// Get User
+router.get('/person/:username', function (req, res) {
+	Person.getPersonByUsername(req.params.username, function (err, user) {
+		if(err){
+			throw err;
+		}
+		//res.json(user);
+		res.render('view-person', {user});
 	});
 });
 
@@ -193,15 +203,7 @@ router.post('/campaign', function (req, res) {
 
 //GET'S
 
-// Get User
-router.get('/person/:username', function (req, res) {
-	Person.getPersonByUsername(req.params.username, function (err, user) {
-		if(err){
-			throw err;
-		}
-		res.json(user);
-	});
-});
+
 
 
 //get person activities

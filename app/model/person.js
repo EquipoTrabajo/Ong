@@ -23,6 +23,12 @@ var personSchema = new Schema({
 	slogan: {
 		type: String
 	},
+	gender: {
+		type: String
+	},
+	email: {
+		type: String
+	},
 	friend_list: [{
 		type: Schema.Types.ObjectId, ref: 'Person'
 	}],
