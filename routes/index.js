@@ -161,7 +161,7 @@ router.get('/person/:username', function (req, res) {
 });
 
 //aplying auth middleware
-router.use(require('../app/controller/auth'));
+//router.use(require('../app/controller/auth'));
 
 //create a receiving entity
 router.post('/receiving-entity', function (req, res) {

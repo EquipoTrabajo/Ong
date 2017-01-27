@@ -10,6 +10,7 @@ var methodOverride = require('method-override');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var web = require('./routes/web');
 
 var app = express();
 
@@ -34,6 +35,7 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.use('/', web);
 app.use('/', index);
 app.use('/users', users);
 
