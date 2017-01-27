@@ -10,17 +10,136 @@ var Comment = require('../app/model/comment');
 var Review = require('../app/model/review');
 var Acknowledgment = require('../app/model/acknowledgment');
 var Activity = require('../app/model/activity');
+var config = require('../app/config/config');
+var jwt    = require('jsonwebtoken'); 
+
+var FB              = require('fb');
+
+FB.options({
+    appId:          config.facebook.appId,
+    appSecret:      config.facebook.appSecret,
+    redirectUri:    config.facebook.redirectUri
+});
+
+var facebookData = function (user) {
+	FB.setAccessToken(user.accessToken);
+	FB.api(user.userID, { fields: ['id','name','cover','picture','location','gender','education','email','friends', 'likes{name,category}'] }, function (response) {
+	  if(!response || response.error) {
+	    console.log(!response ? 'error occurred' : response.error);
+	    return null;
+	  }
+	  //console.log(response.name);
+	  var address= response.location.name.split(',');
+		var person = {
+			"user": {
+				"name": response.name,
+			    "profile_picture": response.picture.data.url,
+			    "cover_picture": response.cover.source,
+			    "score": 100,
+			    "level": 1,
+			    "address": {
+			        "city": address[0],
+			        "state": address[1],
+			        "country": address[2],
+			        "coordinates": {
+			            "x":15,
+			            "y":78
+			        }
+			    },
+			    "type": "person"
+			},
+			"person": {
+				"username": response.id,
+				"facebookid": response.id,
+			    "age": 36,
+			    "slogan": "Donar es mi meta",
+			    "followed_people": response.friends.data,
+			    "friend_list": []
+			}
+		};
+		console.log(person);
+	  return person;
+	});
+}
+
+router.get('/api/facebook/:id/:access_token', function (req, res) {
+	//var accessToken = req.headers.access_token;
+	FB.setAccessToken(req.params.access_token);
+	FB.api(req.params.id, { fields: ['id','name','cover','picture','location','gender','education','email','friends', 'likes{name,category}'] }, function (fbres) {
+	  if(!fbres || fbres.error) {
+	    console.log(!fbres ? 'error occurred' : fbres.error);
+	    return;
+	  }
+	  //console.log(res.id);
+	  //console.log(res.name);
+	  res.json(fbres);
+	});
+});
+
+router.get('/', function (req, res) {
+	res.render('index');
+});
 
 
+router.get('/login/facebook', function (req, res) {
+	res.render('logfacebook');
+});
+
+
+router.post('/authenticate', function(req, res) {
+  Person.findOne({
+    username: req.body.username
+  }, function(err, user) {
+    if (err) throw err;
+ 
+    if (!user) {
+      res.send({success: false, msg: 'Authentication failed. User not found.'});
+    } else {
+      var token = jwt.sign(user, config.secret);
+      res.json({success: true, token: token});
+    }
+  });
+});
 
 //CREATE PERSON TO THE DATABASE
 router.post('/person', function (req, res, next) {
-	var person = req.body;
-	Person.addPerson(person, function (err, person) {
+	var person = facebookData(req.body);
+	//var person = req.body;
+	console.log(person);
+	var fid = 'notexists';
+	if (person.person.facebookid) {
+		fid = person.person.facebookid;
+	}
+	//console.log(person.person.facebookid);
+
+	Person.findOne({'facebookid' : fid}, function (err, personfound) {
 		if(err){
 			throw err;
 		}
-		res.json(person);
+		if(personfound) {
+			res.json(personfound);
+		}else {
+			Person.addPerson(person, function (err, person) {
+				if(err){
+					throw err;
+				}
+				res.json(person);
+			});
+		}
+	});
+});
+
+//aplying auth middleware
+router.use(require('../app/controller/auth'));
+
+//create a receiving entity
+router.post('/receiving-entity', function (req, res) {
+	var receivingEntity = req.body;
+	ReceivingEntity.addReceivingEntity(receivingEntity, function (err, receivingEntity) {
+		if(err){
+			throw err;
+		}
+		res.json(receivingEntity);
 	});
 });
 
@@ -35,18 +154,6 @@ router.post('/company', function (req, res) {
 			throw err;
 		}
 		res.json(company);
-	});
-});
-
-
-//create a receiving entity
-router.post('/receiving-entity', function (req, res) {
-	var receivingEntity = req.body;
-	ReceivingEntity.addReceivingEntity(receivingEntity, function (err, receivingEntity) {
-		if(err){
-			throw err;
-		}
-		res.json(receivingEntity);
 	});
 });
 

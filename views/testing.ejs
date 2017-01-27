@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>nana</title>
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script>
+		$.ajax({
+		  type: "POST",
+		  url: "/person",
+		  data: JSON.stringify(person),
+		  contentType: "application/json",
+		  dataType: "json"
+		});
+	</script>
+</head>
+<body>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>This</title>
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+	<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="fb-root"></div>
+<script>
+	var registerPerson = function (response) {
+  		console.log(JSON.stringify(response, null, ' '));
+  		
+		//console.log(JSON.stringify(person, null, ' '));
+		//window.location.href = "/api/facebook/" + response.id + "/" + 
+		/*$.ajax({
+		  type: "POST",
+		  url: "/person",
+		  data: JSON.stringify(person),
+		  contentType: "application/json",
+		  dataType: "json"
+		});*/
+  	};
+
+
+
+	var fblogin = function () {
+		(function(d, s, id) {
+		  var js, fjs = d.getElementsByTagName(s)[0];
+		  if (d.getElementById(id)){ return;}
+		  js = d.createElement(s); js.id = id;
+		  js.src = "//connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v2.8&appId=1244247258997804";
+		  fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+
+		var app_id = '1244247258997804';
+		window.fbAsyncInit = function() {
+
+			FB.init({
+		    	appId      : app_id,
+		    	status     : true,
+		    	cookie     : true, 
+		    	xfbml      : true, 
+		    	version    : 'v2.8'
+		  	});
+
+		  	FB.getLoginStatus(function(response) {
+		  		console.log( 'suposed two: ' + JSON.stringify(response.authResponse));
+		  		$.ajax({
+				  type: "POST",
+				  url: "/person",
+				  data: JSON.stringify(response.authResponse),
+				  contentType: "application/json",
+				  dataType: "json"
+				});
+		  	});
+		};
+
+	};
+	$(document).ready(function () {
+		fblogin();
+	});
+</script>
+
+<div class="fb-login-button" data-max-rows="1" data-size="medium" data-show-faces="false" data-scope="public_profile, user_friends, email, user_birthday, user_likes, user_location, user_photos, user_education_history" data-auto-logout-link="false"></div>
+	
+</body>
+</html>

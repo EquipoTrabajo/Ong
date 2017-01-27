@@ -14,9 +14,9 @@ var personSchema = new Schema({
 		required: true,
 		unique: true
 	},
-	/*facebookid: {
+	facebookid: {
 		type: String
-	},*/
+	},
 	age: {
 		type: Number
 	},
