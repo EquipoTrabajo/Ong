@@ -11,7 +11,8 @@ var Review = require('../app/model/review');
 var Acknowledgment = require('../app/model/acknowledgment');
 var Activity = require('../app/model/activity');
 var config = require('../app/config/config');
-var jwt    = require('jsonwebtoken'); 
+var jwt    = require('jsonwebtoken');
+var Step = require('step');
 
 var FB              = require('fb');
 
@@ -21,47 +22,67 @@ FB.options({
     redirectUri:    config.facebook.redirectUri
 });
 
-var facebookData = function (user) {
-	FB.setAccessToken(user.accessToken);
-	FB.api(user.userID, { fields: ['id','name','cover','picture','location','gender','education','email','friends', 'likes{name,category}'] }, function (response) {
-	  if(!response || response.error) {
-	    console.log(!response ? 'error occurred' : response.error);
-	    return null;
-	  }
-	  //console.log(response.name);
-	  var address= response.location.name.split(',');
-		var person = {
-			"user": {
-				"name": response.name,
-			    "profile_picture": response.picture.data.url,
-			    "cover_picture": response.cover.source,
-			    "score": 100,
-			    "level": 1,
-			    "address": {
-			        "city": address[0],
-			        "state": address[1],
-			        "country": address[2],
-			        "coordinates": {
-			            "x":15,
-			            "y":78
-			        }
-			    },
-			    "type": "person"
-			},
-			"person": {
-				"username": response.id,
-				"facebookid": response.id,
-			    "age": 36,
-			    "slogan": "Donar es mi meta",
-			    "followed_people": response.friends.data,
-			    "friend_list": []
-			}
-		};
-		console.log(person);
-	  return person;
+//Esta función trae la información de la base de datos la devuelve con el return.
+var getFacebookData = function () {
+	FB.setAccessToken('EAARrouPipCwBAGlMsiQ1jxtUYQKd2YjdnyAkPvZCFLtrSUhdeZBNK5LE5EghXtZBht90kvJ8aHyWrBlZBFz5pZCr0CmPsWXDhUZC3CFNrC8RzR2oXCjkZCieutSlEaDRkMFllpdAFYLmfEQ00FH7tWJIARwFhb90FvdYs71SIue4AZDZD');
+	//Los datos del token y el id de usuario se lo pase directamente mientras la pruebo
+	FB.api('153198048513340', { fields: ['id','name','cover','picture','location','gender','education','email','friends', 'likes{name,category}'] }, 
+	function (response) {
+		console.log(response); //Está información se muestra bien, pero después de que el server me arroja el error 500
+		return response; //Esta es la información traida de facebook
 	});
 }
 
+//Esta funcion se encarga de procesar la data traida de facebook para poder guardarla en la base de datos.
+var processFacebookData = function (response) {
+	if(!response || response.error) {
+		console.log(!response ? 'error occurred' : response.error);
+		return null;
+	}
+	var address= response.location.name.split(',');
+	var person = {
+		"user": {
+			"name": response.name,
+			"profile_picture": response.picture.data.url,
+			"cover_picture": response.cover.source,
+			"score": 100,
+			"level": 1,
+			"address": {
+				"city": address[0],
+				"state": address[1],
+				"country": address[2],
+				"coordinates": {
+					"x":15,
+					"y":78
+				}
+			},
+			"type": "person"
+		},
+		"person": {
+			"username": response.id,
+			"facebookid": response.id,
+			"age": 36,
+			"slogan": "Donar es mi meta",
+			"followed_people": response.friends.data,
+			"friend_list": []
+		}
+	};
+	console.log(person);
+	return person; //está es la información ya lista para ser enviada a la base de datos.
+}
+
+//está ruta la creé con el solo proposito de probar y mostrar la información de facebook pero cuando trato de mostrarlo me da un error 500
+router.get('/testing', function (req, res) {
+	//Step es una librería que se usa en la documentación del respositorio del repositorio de fb
+	//aquí la estoy probando pero no me da resultados
+	Step(getFacebookData(), function (response) {
+		res.json(processFacebookData(response)); //aquí se supone que devuelve la persona en formato, pero no lo hace.
+	});
+});
+
+
+//Esto es otra prueba que hice, si le paso el id y el token por el get, funciona bien, me muestra los datos formato json.
+//pero supongo que es delicado con la seguridad.
 router.get('/api/facebook/:id/:access_token', function (req, res) {
 	//var accessToken = req.headers.access_token;
 	FB.setAccessToken(req.params.access_token);
