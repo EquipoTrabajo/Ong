@@ -147,13 +147,13 @@ module.exports.commentCampaign = function (idCampaign, idComment, callback) {
 
 // Get Campaigns
 module.exports.getCampaignById = function (id, callback) {
-	Campaign.findById(id).populate(['volunteers', 'donors', 'comments', 'updates']).exec(callback);
+	Campaign.findById(id).populate(['volunteers', 'donors', 'comments', 'updates', 'donations']).exec(callback);
 }
 
 
 // Get Campaigns
 module.exports.getAllCampaigns = function (callback, limit) {
-	Campaign.find().populate(['volunteers', 'donors', 'comments', 'updates']).exec(callback);
+	Campaign.find().populate(['volunteers', 'donors', 'comments', 'updates', 'donations']).exec(callback);
 }
 
 // Get Campaigns

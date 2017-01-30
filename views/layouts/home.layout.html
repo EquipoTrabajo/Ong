@@ -224,4 +224,16 @@
    
  });
 </script>
+
+<script>
+  $(document).ready(function () {
+    $.get( "/campaigns", function( data ) {
+      console.log(JSON.stringify(data, null, ' '));
+      for(var campaign in data) {
+        $('#list-campaigns').append("<tr><th scope='row'><a href='/campaigns/"+ data[campaign]._id +"'>" + data[campaign].name + "</a></th><td>" + data[campaign].category + "</td><td>" + data[campaign].start_date + "</td><td>" + data[campaign].end_date + "</td></tr>");
+      }
+    });
+
+  });
+</script>
 </html>

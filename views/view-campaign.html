@@ -37,3 +37,99 @@
 	  </tbody>
 	</table>
 </div>
+<div class="col-md-6 col-sm-6 col-xs-12">
+  <div class="x_panel">
+    <div class="x_title">
+      <h2>Comments <small>Sessions</small></h2>
+      <ul class="nav navbar-right panel_toolbox">
+        <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">Settings 1</a>
+            </li>
+            <li><a href="#">Settings 2</a>
+            </li>
+          </ul>
+        </li>
+        <li><a class="close-link"><i class="fa fa-close"></i></a>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+      <ul class="list-unstyled timeline">
+      	<% for(var i=0; i<campaign.comments.length; i++) { %>
+	        <li>
+	          <div class="block">
+	            <div class="tags">
+	              <a href="" class="tag">
+	                <span><%= campaign.comments[i]._id %></span>
+	              </a>
+	            </div>
+	            <div class="block_content">
+	              <h2 class="title">
+	                              <a>Comment</a>
+	                          </h2>
+	              <div class="byline">
+	                <span><%= campaign.comments[i].created_at %></span> by <a><%= campaign.comments[i].user %></a>
+	              </div>
+	              <p class="excerpt"><%= campaign.comments[i].text %></a>
+	              </p>
+	            </div>
+	          </div>
+	        </li>
+	    <% } %>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<div class="col-md-6 col-sm-6 col-xs-12">
+	<div class="x_panel">
+	  <div class="x_title">
+	    <h2>Donaciones <small>Try hovering over the rows</small></h2>
+	    <ul class="nav navbar-right panel_toolbox">
+	      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+	      </li>
+	      <li class="dropdown">
+	        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+	        <ul class="dropdown-menu" role="menu">
+	          <li><a href="#">Settings 1</a>
+	          </li>
+	          <li><a href="#">Settings 2</a>
+	          </li>
+	        </ul>
+	      </li>
+	      <li><a class="close-link"><i class="fa fa-close"></i></a>
+	      </li>
+	    </ul>
+	    <div class="clearfix"></div>
+	  </div>
+	  <div class="x_content">
+	    <table class="table table-hover">
+	      <thead>
+	        <tr>
+	          <th>Usuario</th>
+	          <th>Cantidad</th>
+	          <th>Fecha</th>
+	          <th>nro</th>
+	        </tr>
+	      </thead>
+	      <tbody>
+	      	<% for(var i=0; i<campaign.donations.length; i++) { %>
+		        <tr>
+		          <th scope="row"><%= campaign.donations[i].user %></th>
+		          <td><%= campaign.donations[i].amount %></td>
+		          <td><%= campaign.donations[i].created_at %></td>
+		          <td><%= i %></td>
+		        </tr>
+	        <% } %>
+	      </tbody>
+	    </table>
+
+	  </div>
+	</div>
+</div>

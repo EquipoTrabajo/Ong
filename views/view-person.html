@@ -1,32 +1,31 @@
 <% layout('home.person') -%>
+<div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="dashboard_graph">
 
+                <div class="row x_title">
+                  <div class="col-md-6">
+                    <h3>Network Activities <small>Graph title sub-title</small></h3>
+                  </div>
+                  <div class="col-md-6">
+                    <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+                      <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                      <span>December 30, 2014 - January 28, 2015</span> <b class="caret"></b>
+                    </div>
+                  </div>
+                </div>
 
-
-<div class="container">
-      <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad" >
-   
-   
-          <div class="panel panel-info">
+                <div class="col-md-5 col-sm-5 col-xs-12">
+                  <img src="<%= user.userid.cover_picture %>" class="img-responsive" alt="">
+                </div>
+                <div class="col-md-7 col-sm-7 col-xs-12 bg-white">
+                  <div class="panel panel-info">
             <div class="panel-heading">
               <h3 class="panel-title"><%= user.userid.name %></h3>
             </div>
             <div class="panel-body">
               <div class="row">
                 <div class="col-md-3 col-lg-3 " align="center"> <img alt="User Pic" src="<%= user.userid.profile_picture %>" class="img-circle img-responsive"> </div>
-                
-                <!--<div class="col-xs-10 col-sm-10 hidden-md hidden-lg"> <br>
-                  <dl>
-                    <dt>DEPARTMENT:</dt>
-                    <dd>Administrator</dd>
-                    <dt>HIRE DATE</dt>
-                    <dd>11/12/2013</dd>
-                    <dt>DATE OF BIRTH</dt>
-                       <dd>11/12/2013</dd>
-                    <dt>GENDER</dt>
-                    <dd>Male</dd>
-                  </dl>
-                </div>-->
                 <div class=" col-md-9 col-lg-9 "> 
                   <table class="table table-user-information">
                     <tbody>
@@ -70,42 +69,52 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-<script>
-	$(document).ready(function() {
-	    var panels = $('.user-infos');
-	    var panelsButton = $('.dropdown-user');
-	    panels.hide();
+                </div>
 
-	    //Click dropdown
-	    panelsButton.click(function() {
-	        //get data-for attribute
-	        var dataFor = $(this).attr('data-for');
-	        var idFor = $(dataFor);
+                <div class="clearfix"></div>
+              </div>
+            </div>
 
-	        //current button
-	        var currentButton = $(this);
-	        idFor.slideToggle(400, function() {
-	            //Completed slidetoggle
-	            if(idFor.is(':visible'))
-	            {
-	                currentButton.html('<i class="glyphicon glyphicon-chevron-up text-muted"></i>');
-	            }
-	            else
-	            {
-	                currentButton.html('<i class="glyphicon glyphicon-chevron-down text-muted"></i>');
-	            }
-	        })
-	    });
+          </div>
 
+          <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Todas las Campañas <small>Stripped table subtitle</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
 
-	    $('[data-toggle="tooltip"]').tooltip();
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Nombre</th>
+                          <th>Categoría</th>
+                          <th>Fecha Inicio</th>
+                          <th>Fecha Fin</th>
+                        </tr>
+                      </thead>
+                      <tbody id="list-campaigns">
+                        
+                      </tbody>
+                    </table>
 
-	    $('button').click(function(e) {
-	        e.preventDefault();
-	        alert("This is a demo.\n :-)");
-	    });
-	});
-</script>
+                  </div>
+                </div>
+              </div>
+
