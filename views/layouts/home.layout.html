@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Donaciones | </title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <!-- NProgress -->
+    <!-- <link href="../vendors/nprogress/nprogress.css" rel="stylesheet"> -->
+    <!-- iCheck -->
+    <!-- <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet"> -->
+	
+    <!-- bootstrap-progressbar -->
+    <!-- <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet"> -->
+    <!-- JQVMap -->
+    <!-- <link href="../vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet"/> -->
+    <!-- bootstrap-daterangepicker -->
+    <!-- <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet"> -->
+
+    <!-- Custom Theme Style -->
+    <link href="/css/custom.min.css" rel="stylesheet">
+  </head>
+
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+        <%- body -%>
+        
+
+        <!-- page content -->
+       <!--  <div class="right_col" role="main">
+          
+        </div> -->
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <!-- <footer>
+          <div class="pull-right">
+            
+          </div>
+          <div class="clearfix"></div>
+        </footer> -->
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!-- FastClick -->
+    <!-- <script src="../vendors/fastclick/lib/fastclick.js"></script> -->
+    <!-- NProgress -->
+    <!-- <script src="../vendors/nprogress/nprogress.js"></script> -->
+    <!-- Chart.js -->
+    <!-- <script src="../vendors/Chart.js/dist/Chart.min.js"></script> -->
+    <!-- gauge.js -->
+    <!-- <script src="../vendors/gauge.js/dist/gauge.min.js"></script> -->
+    <!-- bootstrap-progressbar -->
+    <!-- <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script> -->
+    <!-- iCheck -->
+    <!-- <script src="../vendors/iCheck/icheck.min.js"></script> -->
+    <!-- Skycons -->
+    <!-- <script src="../vendors/skycons/skycons.js"></script> -->
+    <!-- Flot -->
+    <!-- <script src="../vendors/Flot/jquery.flot.js"></script> -->
+    <!-- <script src="../vendors/Flot/jquery.flot.pie.js"></script> -->
+    <!-- <script src="../vendors/Flot/jquery.flot.time.js"></script> -->
+    <!-- <script src="../vendors/Flot/jquery.flot.stack.js"></script> -->
+    <!-- <script src="../vendors/Flot/jquery.flot.resize.js"></script> -->
+    <!-- Flot plugins -->
+    <!-- <script src="../vendors/flot.orderbars/js/jquery.flot.orderBars.js"></script> -->
+    <!-- <script src="../vendors/flot-spline/js/jquery.flot.spline.min.js"></script> -->
+    <!-- <script src="../vendors/flot.curvedlines/curvedLines.js"></script> -->
+    <!-- DateJS -->
+    <!-- <script src="../vendors/DateJS/build/date.js"></script> -->
+    <!-- JQVMap -->
+    <!-- <script src="../vendors/jqvmap/dist/jquery.vmap.js"></script> -->
+    <!-- <script src="../vendors/jqvmap/dist/maps/jquery.vmap.world.js"></script> -->
+    <!-- <script src="../vendors/jqvmap/examples/js/jquery.vmap.sampledata.js"></script> -->
+    <!-- bootstrap-daterangepicker -->
+    <!-- <script src="../vendors/moment/min/moment.min.js"></script> -->
+    <!-- <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script> -->
+
+    <!-- Custom Theme Scripts -->
+    <script src="/js/custom.min.js"></script>
+	
+  </body>
+  <script>
+     $(document).ready(function() {
+
+        $( "#add-campaign" ).submit(function( event ) {
+            event.preventDefault();
+            var campaign = {};
+            $('#add-campaign').serializeArray().map(function(x){campaign[x.name] = x.value;});
+
+            arrangeJson(campaign);
+            console.log(JSON.stringify(campaign, null, ' '));
+            $.ajax({
+              type: "POST",
+              url: "/campaign",
+              data: JSON.stringify(campaign),
+              success: function (data) {
+                window.location.href = "/campaigns/" + data._id;
+              },
+              contentType: "application/json",
+              dataType: "json"
+            });
+
+            function arrangeJson(data){
+                var initMatch = /^([a-z0-9]+?)\[/i;
+                var first = /^\[[a-z0-9]+?\]/i;
+                var isNumber = /^[0-9]$/;
+                var bracers = /[\[\]]/g;
+                var splitter = /\]\[|\[|\]/g;
+
+                for(var key in data) {
+                    if(initMatch.test(key)){
+                        data[key.replace(initMatch,'[$1][')] = data[key];
+                    }
+                    else{
+                        data[key.replace(/^(.+)$/,'[$1]')] = data[key];
+                    }
+                    delete data[key];
+                }
+
+
+                for (var key in data) {
+                    processExpression(data, key, data[key]);
+                    delete data[key];
+                }
+
+                function processExpression(dataNode, key, value){
+                    var e = key.split(splitter);
+                    if(e){
+                        var e2 =[];
+                        for (var i = 0; i < e.length; i++) {
+                                if(e[i]!==''){e2.push(e[i]);} 
+                        }
+                        e = e2;
+                        if(e.length > 1){
+                            var x = e[0];
+                            var target = dataNode[x];
+                            if(!target){
+                                if(isNumber.test(e[1])){
+                                    dataNode[x] = [];
+                                }
+                                else{
+                                    dataNode[x] ={}
+                                }
+                            }
+                            processExpression(dataNode[x], key.replace(first,''), value);
+                        }
+                        else if(e.length == 1){
+                            dataNode[e[0]] = value;
+                        }
+                        else{
+                            alert('This should not happen...');
+                        }
+                    }
+                }
+            }
+            //console.log(JSON.stringify(campaign, null, ' '));
+        });
+
+    /*var enrollType;
+  //  $("#div_id_As").hide();
+    $("input[name='As']").change(function() {
+        memberType = $("input[name='select']:checked").val();
+        providerType = $("input[name='As']:checked").val();
+        toggleIndividInfo();
+    });
+    
+    $("input[name='select']").change(function() {
+        memberType = $("input[name='select']:checked").val();
+        toggleIndividInfo();
+        toggleLearnerTrainer();
+    });
+    
+    function toggleLearnerTrainer() {
+
+    if (memberType == 'P' || enrollType=='company') {
+        $("#cityField").hide();
+        $("#providerType").show();
+        $(".provider").show();
+        $(".locationField").show();
+        if(enrollType=='INSTITUTE'){
+            $(".individ").hide();
+        }
+    
+    } 
+    else {
+        $("#providerType").hide();
+        $(".provider").hide();
+        $('#name').show();
+        $("#cityField").hide();
+        $(".locationField").show();
+        $("#instituteName").hide();
+        $("#cityField").show();
+        
+    }
+    }
+    function toggleIndividInfo(){
+
+    if(((typeof memberType!=='undefined' && memberType == 'TRAINER')||enrollType=='INSTITUTE') && providerType=='INDIVIDUAL'){
+        $("#instituteName").hide();
+        $(".individ").show();
+        $('#name').show();
+    }
+    else if((typeof memberType!=='undefined' && memberType == 'TRAINER')|| enrollType=='INSTITUTE'){
+        $('#name').hide();
+        $("#instituteName").show();
+        $(".individ").hide();
+    }
+    }*/
+   
+ });
+</script>
+</html>

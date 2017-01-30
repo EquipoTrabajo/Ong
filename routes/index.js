@@ -256,7 +256,8 @@ router.get('/campaigns/:id', function (req, res) {
 			throw err;
 		}
 		Person.addSeenCampaign(idPerson, req.params.id, function (err, person) {
-			res.json(campaign);
+			// res.json(campaign);
+			res.render('view-campaign', {campaign: campaign});
 		});
 	});
 });

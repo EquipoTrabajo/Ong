@@ -1,0 +1,39 @@
+<% layout('home.person') -%>
+<div class="panel-body">
+	<table class="table table-striped">
+	  <tbody>
+	    <tr>
+	      <th scope="row">Categoría</th>
+	      <td><%= campaign.category %></td>
+	    </tr>
+	    <tr>
+	      <th scope="row">Nombre</th>
+	      <td><%= campaign.name %></td>
+	    </tr>
+	    <tr>
+	      <th scope="row">Fecha de Inicio</th>
+	      <td><%= campaign.start_date %></td>
+	    </tr>
+	    <tr>
+	      <th scope="row">Fecha de Fin</th>
+	      <td><%= campaign.end_date %></td>
+	    </tr>
+	    <tr>
+	      <th scope="row">Cantidad deseada</th>
+	      <td><%= campaign.aspired_amout %></td>
+	    </tr>
+	    <tr>
+	      <th scope="row">Personas beneficiadas</th>
+	      <td><%= campaign.people_reached %></td>
+	    </tr>
+	    <tr>
+	      <th scope="row">Descripción</th>
+	      <td><%= campaign.description %></td>
+	    </tr>
+	    <tr>
+	      <th scope="row">Dirección</th>
+	      <td><%= campaign.address.city %>, <%= campaign.address.state %>, <%= campaign.address.country %></td>
+	    </tr>
+	  </tbody>
+	</table>
+</div>
