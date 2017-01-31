@@ -109,7 +109,7 @@ router.get('/login/facebook', function (req, res) {
 
 router.post('/authenticate', function(req, res) {
   Person.findOne({
-    username: req.body.username
+    facebookid: req.body.facebookid
   }, function(err, user) {
     if (err) throw err;
  
@@ -151,6 +151,7 @@ router.post('/person', getFacebookData, processFacebookData, function (req, res,
 
 // Get User
 router.get('/person/:username', function (req, res) {
+	//console.log(req.decoded.userid);
 	Person.getPersonByUsername(req.params.username, function (err, user) {
 		if(err){
 			throw err;
@@ -161,7 +162,7 @@ router.get('/person/:username', function (req, res) {
 });
 
 //aplying auth middleware
-//router.use(require('../app/controller/auth'));
+router.use(require('../app/controller/auth'));
 
 //create a receiving entity
 router.post('/receiving-entity', function (req, res) {
@@ -189,7 +190,7 @@ router.post('/company', function (req, res) {
 });
 
 router.post('/campaign', function (req, res) {
-	var user = req.headers.userid;
+	var user = req.headers.userid || req.decoded._doc.userid;
 	var campaign = req.body;
 	campaign.creators = [];
 	campaign.creators.push(user);
@@ -208,8 +209,8 @@ router.post('/campaign', function (req, res) {
 
 //get person activities
 
-router.get('/person/:username', function (req, res) {
-	Activity.getActivities(req.params.username, function (err, activities) {
+router.get('/person/:idPerson/activities', function (req, res) {
+	Activity.getActivities(req.params.idPerson, function (err, activities) {
 		if(err){
 			throw err;
 		}
@@ -250,6 +251,7 @@ router.get('/receiving-entity/:username', function (req, res) {
 
 // Get Receiving Entity
 router.get('/campaigns/:id', function (req, res) {
+	//console.log(req.decoded._doc.userid);
 	var idPerson = req.headers.usertypeid;
 	Campaign.getCampaignById(req.params.id, function (err, campaign) {
 		if(err){
@@ -347,7 +349,7 @@ router.post('/campaigns/:id/like', function (req, res) {
 			if(err){
 				throw err;
 			}
-			Activity.addActity(idUser, req.params.id, 'likes', function (err) {
+			Activity.addActivity(idUser, req.params.id, 'likes', function (err) {
 				if(err){
 					throw err;
 				}
@@ -370,7 +372,7 @@ router.post('/campaigns/:id/dislike', function (req, res) {
 
 //Comment Campaign
 router.post('/campaigns/:id/comment', function (req, res) {
-	var idPerson = req.headers.usertypeid;
+	var idPerson = req.headers.usertypeid || req.decoded._doc._id;
 	Comment.addComment(req.body.text, idPerson, function (err, comment) {
 		if(err){
 			throw err;
@@ -419,14 +421,14 @@ router.post('/update/:id/dislike', function (req, res) {
 
 //Donate campaign
 router.post('/campaigns/:id/donate', function (req, res) {
-	var idUser = req.headers.userid;
-	var idPerson = req.headers.usertypeid;
+	var idUser = req.headers.userid || req.decoded._doc.userid;
+	var idPerson = req.headers.usertypeid || req.decoded._doc._id;
 	//var body = req.body;
 	Campaign.addDonation(req.body.amount, req.params.id, idUser, idPerson, function (err, campaign) {
 		if(err){
 			throw err;
 		}
-		Activity.addActity(idPerson, req.params.id, 'donates', function (err) {
+		Activity.addActivity(idPerson, req.params.id, 'donates', function (err) {
 			if(err){
 				throw err;
 			}
@@ -444,7 +446,7 @@ router.post('/campaigns/:id/volunteer', function (req, res) {
 		if(err){
 			throw err;
 		}
-		Activity.addActity(idPerson, req.params.id, 'volunteers', function (err) {
+		Activity.addActivity(idPerson, req.params.id, 'volunteers', function (err) {
 			if(err){
 				throw err;
 			}

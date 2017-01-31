@@ -21,7 +21,7 @@ var activitySchema = new Schema({
 var Activity = module.exports = mongoose.model('Activity', activitySchema);
 
 // Add Activity
-module.exports.addActity = function (idPerson, idCampaign, activity, callback) {
+module.exports.addActivity = function (idPerson, idCampaign, activity, callback) {
 	Activity.create({person: idPerson, campaign: idCampaign, activity: activity}, callback);
 }
 

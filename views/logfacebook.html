@@ -1,5 +1,6 @@
 <% layout('old_layout') -%>
 <div id="fb-root"></div>
+<script src="/js/js.cookie.js"></script>
 <script>
 	var registerPerson = function (response) {
   		console.log(JSON.stringify(response, null, ' '));
@@ -43,8 +44,18 @@
 				  type: "POST",
 				  url: "/person",
 				  data: JSON.stringify(response.authResponse),
-				  success: function (data) {
-				  	window.location.href = "/person/" + data.username;
+				  success: function (person) {
+				  	$.ajax({
+					  type: "POST",
+					  url: "/authenticate",
+					  data: JSON.stringify({"facebookid": person.facebookid}),
+					  success: function (auth) {
+					  	Cookies.set('usertoken', auth.token);
+					  	window.location.href = "/person/" + person.username;
+					  },
+					  contentType: "application/json",
+					  dataType: "json"
+					});
 				  },
 				  contentType: "application/json",
 				  dataType: "json"

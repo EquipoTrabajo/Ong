@@ -92,6 +92,7 @@
 
     <!-- Custom Theme Scripts -->
     <script src="/js/custom.min.js"></script>
+    <script src="/js/js.cookie.js"></script>
 	
   </body>
   <script>
@@ -228,10 +229,60 @@
 <script>
   $(document).ready(function () {
     $.get( "/campaigns", function( data ) {
-      console.log(JSON.stringify(data, null, ' '));
       for(var campaign in data) {
         $('#list-campaigns').append("<tr><th scope='row'><a href='/campaigns/"+ data[campaign]._id +"'>" + data[campaign].name + "</a></th><td>" + data[campaign].category + "</td><td>" + data[campaign].start_date + "</td><td>" + data[campaign].end_date + "</td></tr>");
       }
+    });
+
+    var idPerson = $('#idPerson').attr("data-idPerson");
+
+    if (idPerson !== undefined) {
+        $.get( "/person/" + idPerson + "/activities", function( data ) {
+          for(var activity in data) {
+            $('#list-activities').append("<tr><th scope='row'><a href='/campaigns/"+ data[activity].campaign._id +"'>" + data[activity].campaign.name + "</a></th><td>" + data[activity].activity + "</td><td>" + data[activity].created_at + "</td>");
+          }
+        });
+    }
+
+
+    $('#comment-campaign').submit(function (event) {
+        event.preventDefault();
+        var idCampaign = $("#comment-campaign").attr("data-idCampaign");
+        $.ajax({
+            url:'/campaigns/' + idCampaign + '/comment',
+            type:'post',
+            data:$('#comment-campaign').serialize(),
+            success:function(){
+                $('#campaignComment').val("");
+            }
+        });
+    });
+
+    $('#updateCampaign').submit(function (event) {
+        event.preventDefault();
+        var idCampaign = $("#updateCampaign").attr("data-idCampaign");
+        $.ajax({
+            url:'/campaigns/' + idCampaign + '/update',
+            type:'post',
+            data:$('#updateCampaign').serialize(),
+            success:function(){
+                $('#pictureUpdateCampaign').val("");
+                $('#textUpdateCampaign').val("");
+            }
+        });
+    });
+
+    $('#donateCampaign').submit(function (event) {
+        event.preventDefault();
+        var idCampaign = $("#donateCampaign").attr("data-idCampaign");
+        $.ajax({
+            url:'/campaigns/' + idCampaign + '/donate',
+            type:'post',
+            data:$('#donateCampaign').serialize(),
+            success:function(){
+                $('#amountDonateCampaign').val("");
+            }
+        });
     });
 
   });
