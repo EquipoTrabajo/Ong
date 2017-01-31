@@ -550,7 +550,12 @@ router.post('/person/:idPerson/acknowledgment', function (req, res) {
 		if(err){
 			throw err;
 		}
-		res.json(acknowledgment);
+		Person.addAcknowledgment(idPerson, acknowledgment._id, function (err, person) {
+			if(err){
+				throw err;
+			}
+			res.json(acknowledgment);
+		});
 	});
 });
 

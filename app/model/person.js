@@ -58,6 +58,9 @@ var personSchema = new Schema({
 	}],
 	donation_certificate: [{
 		type: String
+	}],
+	acknowledgments: [{
+		type: Schema.Types.ObjectId, ref: 'Acknowledgment'
 	}]
 });
 
@@ -76,7 +79,7 @@ module.exports.addPerson = function (body, callback) {
 
 // Get User
 module.exports.getPersonByUsername = function (username, callback) {
-	Person.findOne({'username': username}).populate('userid').exec(callback);
+	Person.findOne({'username': username}).populate(['userid', 'donated_campaigns', 'volunteer_campaigns', 'acknowledgments']).exec(callback);
 }
 
 // Get User
@@ -121,6 +124,11 @@ module.exports.addFollowedReceivingEntity = function (idPerson, idFollow, callba
 //Add Donation Certificate
 module.exports.addDonationCertificate = function (idPerson, certificate, callback) {
 	Person.update({ _id: idPerson }, { $push: { donation_certificate: certificate }}, callback);
+}
+
+//Add Acknowledgment
+module.exports.addAcknowledgment = function (idPerson, idAcknowledgment, callback) {
+	Person.update({ _id: idPerson }, { $push: { acknowledgments: idAcknowledgment }}, callback);
 }
 
 // Get User
