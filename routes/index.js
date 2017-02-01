@@ -178,14 +178,19 @@ router.post('/receiving-entity', function (req, res) {
 //Create a company
 router.post('/company', function (req, res) {
 	var body = req.body;
-	var idPerson = req.headers.usertypeid;
+	var idPerson = req.headers.usertypeid || req.decoded._doc._id;
 	body.company.admins = [];
 	body.company.admins.push(idPerson);
 	Company.addCompany(body, function (err, company) {
 		if(err){
 			throw err;
 		}
-		res.json(company);
+		Person.addAdministratedCompany(idPerson, company._id, function (err, person) {
+			if(err){
+				throw err;
+			}
+			res.json(company);
+		});
 	});
 });
 
@@ -224,18 +229,24 @@ router.get('/company/:username', function (req, res) {
 		if(err){
 			throw err;
 		}
-		res.json(company);
+		//res.json(company);
+		res.render('view-company', company);
 	});
 });
 
 //Make Admin
 router.post('/company/:idCompany/person/:idPerson/add-admin', function (req, res) {
-	var idPerson = req.headers.usertypeid;
+	var idPerson = req.headers.usertypeid || req.decode._doc._id;
 	Company.addAdmin(req.params.idCompany, req.params.idPerson, function (err, company) {
 		if(err){
 			throw err;
 		}
-		res.json(company);
+		Person.addAdministratedCompany(req.params.idPerson, req.params.idCompany, function (err, person) {
+			if(err){
+				throw err;
+			}
+			res.json(company);
+		});
 	});
 });
 

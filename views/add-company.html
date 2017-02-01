@@ -1,0 +1,156 @@
+<% layout('home.person') -%>
+
+<div class="container">    
+            
+    <div id="signupbox" style=" margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <div class="panel-title">Empresa</div>
+            </div>  
+            <div class="panel-body" >
+                <form id="add-company" method="post" action=".">
+                        <input type='hidden' name='csrfmiddlewaretoken' value='XFe2rTYl9WOpV8U6X5CfbIuOZOELJ97S' />
+                        <input type='hidden' name='user[type]' value='company' />
+                        <input type='hidden' name='user[score]' value='100' />
+                        <div id="div_id_username" class="form-group required">
+                            <label for="user.name" class="control-label col-md-4  requiredField"> Nombre <span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 ">
+                                <input class="input-md  textinput textInput form-control" id="user.name" maxlength="30" name="user[name]" placeholder="Nombre de la empresa" style="margin-bottom: 10px" type="text" />
+                            </div>
+                        </div>
+                        <div id="div_id_email" class="form-group required">
+                            <label for="user.profile_picture" class="control-label col-md-4  requiredField">Image de perfil<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 ">
+                                <input class="input-md emailinput form-control" id="user.profile_picture" name="user[profile_picture]" placeholder="URL Imagen de perfil" style="margin-bottom: 10px" type="text" />
+                            </div>     
+                        </div>
+                        <div id="div_id_password1" class="form-group required">
+                            <label for="user.cover_picture" class="control-label col-md-4  requiredField">Imagen de Cover<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 "> 
+                                <input class="input-md textinput textInput form-control" id="user.cover_picture" name="user[cover_picture]" placeholder="URL Imagen de Cover" style="margin-bottom: 10px" type="date" />
+                            </div>
+                        </div>
+                        <div id="div_id_password2" class="form-group required">
+                             <label for="company.username" class="control-label col-md-4  requiredField"> Nombre de Usuario<span class="asteriskField">*</span> </label>
+                             <div class="controls col-md-8 ">
+                                <input class="input-md textinput textInput form-control" id="company.username" name="company[username]" placeholder="Nombre de usuario" style="margin-bottom: 10px" type="date" />
+                            </div>
+                        </div>
+                        <div id="div_id_name" class="form-group required"> 
+                            <label for="company.slogan" class="control-label col-md-4  requiredField">Frase<span class="asteriskField">*</span> </label> 
+                            <div class="controls col-md-8 "> 
+                                <input class="input-md textinput textInput form-control" id="company.slogan" name="company[slogan]" placeholder="Escriba la frase que idenfique a su empresa" style="margin-bottom: 10px" type="text" />
+                            </div>
+                        </div>
+                        <div id="div_id_company" class="form-group required"> 
+                            <label for="company.description" class="control-label col-md-4  requiredField"> Descripción<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 "> 
+                                 <input class="input-md textinput textInput form-control" id="company.description" name="company[description]" placeholder="Descripción de la empresa" style="margin-bottom: 10px" type="text" />
+                            </div>
+                        </div> 
+                        <div id="div_id_number" class="form-group required">
+                             <label for="user.address.city" class="control-label col-md-4  requiredField"> Ciudad<span class="asteriskField">*</span> </label>
+                             <div class="controls col-md-8 ">
+                                 <input class="input-md textinput textInput form-control" id="user.address.city" name="user[address][city]" placeholder="Ciudad de la campaña" style="margin-bottom: 10px" type="text" />
+                            </div> 
+                        </div> 
+                        <div id="div_id_location" class="form-group required">
+                            <label for="user.address.state" class="control-label col-md-4  requiredField"> Estado<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 ">
+                                <input class="input-md textinput textInput form-control" id="user.address[state]" name="user[address][state]" placeholder="Estado de la campaña" style="margin-bottom: 10px" type="text" />
+                            </div> 
+                        </div> 
+                        <div id="div_id_location" class="form-group required">
+                            <label for="user.address.country" class="control-label col-md-4  requiredField"> País<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 ">
+                                <input class="input-md textinput textInput form-control" id="user.address.country" name="user[address][country]" placeholder="País de la campaña" style="margin-bottom: 10px" type="text" />
+                            </div> 
+                        </div> 
+                        <div class="form-group"> 
+                            <div class="aab controls col-md-4 "></div>
+                            <div class="controls col-md-8 ">
+                                <input type="submit" name="send" value="Guardar" class="btn btn-primary btn btn-info" id="send" />
+                            </div>
+                        </div>
+
+                </form>
+            </div>
+        </div>
+    </div> 
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$( "#add-company" ).submit(function( event ) {
+			event.preventDefault();
+			var company = {};
+			$('#add-company').serializeArray().map(function(x){company[x.name] = x.value;});
+
+			arrangeJson(company);
+			console.log(JSON.stringify(company, null, ' '));
+			$.ajax({
+				type: "POST",
+				url: "/company",
+				data: JSON.stringify(company),
+				success: function (data) {
+					window.location.href = "/company/" + data.username;
+				},
+				contentType: "application/json",
+				dataType: "json"
+			});
+		});
+
+	});
+
+	function arrangeJson(data){
+		var initMatch = /^([a-z0-9]+?)\[/i;
+		var first = /^\[[a-z0-9]+?\]/i;
+		var isNumber = /^[0-9]$/;
+		var bracers = /[\[\]]/g;
+		var splitter = /\]\[|\[|\]/g;
+
+		for(var key in data) {
+			if(initMatch.test(key)){
+				data[key.replace(initMatch,'[$1][')] = data[key];
+			}
+			else{
+				data[key.replace(/^(.+)$/,'[$1]')] = data[key];
+			}
+			delete data[key];
+		}
+
+
+		for (var key in data) {
+			processExpression(data, key, data[key]);
+			delete data[key];
+		}
+
+		function processExpression(dataNode, key, value){
+			var e = key.split(splitter);
+			if(e){
+				var e2 =[];
+				for (var i = 0; i < e.length; i++) {
+					if(e[i]!==''){e2.push(e[i]);} 
+				}
+				e = e2;
+				if(e.length > 1){
+					var x = e[0];
+					var target = dataNode[x];
+					if(!target){
+						if(isNumber.test(e[1])){
+							dataNode[x] = [];
+						}
+						else{
+							dataNode[x] ={}
+						}
+					}
+					processExpression(dataNode[x], key.replace(first,''), value);
+				} else if(e.length == 1){
+					dataNode[e[0]] = value;
+				} else{
+					alert('This should not happen...');
+				}
+			}
+		}
+	}
+</script>

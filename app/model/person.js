@@ -38,6 +38,9 @@ var personSchema = new Schema({
 	followed_companies: [{
 		type: Schema.Types.ObjectId, ref: 'Company'
 	}],
+	administrated_companies: [{
+		type: Schema.Types.ObjectId, ref: 'Company'
+	}],
 	followed_receivingEntities: [{
 		type: Schema.Types.ObjectId, ref: 'ReceivingEntity'
 	}],
@@ -79,7 +82,7 @@ module.exports.addPerson = function (body, callback) {
 
 // Get User
 module.exports.getPersonByUsername = function (username, callback) {
-	Person.findOne({'username': username}).populate(['userid', 'donated_campaigns', 'volunteer_campaigns', 'acknowledgments']).exec(callback);
+	Person.findOne({'username': username}).populate(['userid', 'donated_campaigns', 'volunteer_campaigns', 'acknowledgments', 'administrated_companies']).exec(callback);
 }
 
 // Get User
@@ -114,6 +117,11 @@ module.exports.addFollowedPerson = function (idPerson, idFollow, callback) {
 //follow Campaign
 module.exports.addFollowedCompany = function (idPerson, idFollow, callback) {
 	Person.update({ _id: idPerson }, { $push: { followed_companies: idFollow }}, callback);
+}
+
+//administrate company
+module.exports.addAdministratedCompany = function (idPerson, idCompany, callback) {
+	Person.update({ _id: idPerson }, { $push: { administrated_companies: idCompany }}, callback);
 }
 
 //follow Campaign
