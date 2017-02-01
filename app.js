@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
+var busboy = require('connect-busboy');
 //var FB = require('fb');
 
 
@@ -26,6 +27,8 @@ app.set('view engine', 'hbs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
+app.use(busboy());
+//app.use(bodyParser({uploadDir:path.join(__dirname, 'public/uploads')}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());

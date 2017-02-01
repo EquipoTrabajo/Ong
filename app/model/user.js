@@ -57,3 +57,8 @@ module.exports.addUser = function (user, callback) {
 module.exports.getUserById = function (id, callback) {
 	User.findById(id, callback);
 }
+
+//change profile picture
+module.exports.changeProfilePicture = function (idUser, picture, callback) {
+	Person.update({ _id: idUser }, {profile_picture: picture}, callback);
+}

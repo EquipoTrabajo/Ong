@@ -14,6 +14,9 @@ var config = require('../app/config/config');
 var jwt    = require('jsonwebtoken');
 var Step = require('step');
 
+var path = require('path');
+var fs = require('fs');
+
 var FB              = require('fb');
 
 FB.options({
@@ -194,6 +197,27 @@ router.post('/company', function (req, res) {
 	});
 });
 
+router.post('/user/:idUser/upload_picture', function (req, res) {
+	var fstream;
+    req.pipe(req.busboy);
+    req.busboy.on('file', function (fieldname, file, filename) {
+        console.log("Uploading: " + filename);
+
+        //Path where image will be uploaded
+        fstream = fs.createWriteStream(path.resolve('./public/uploads/images/') + '/' + filename);
+        file.pipe(fstream);
+        fstream.on('close', function () {    
+            console.log("Upload Finished of " + filename);              
+            User.changeProfilePicture(req.params.idUser, '/uploads/images/' + filename, function (err, user) {
+            	if (err) {
+            		throw err;
+            	}
+            	res.json(user);
+            });
+        });
+    });
+});
+
 router.post('/campaign', function (req, res) {
 	var user = req.headers.userid || req.decoded._doc.userid;
 	var campaign = req.body;
@@ -206,6 +230,15 @@ router.post('/campaign', function (req, res) {
 		res.json(campaign);
 	});
 });
+
+router.get('/persons', function (req, res) {
+	Person.getAllPersons(function (err, persons) {
+		if(err){
+			throw err;
+		}
+		res.json(persons);
+	});
+})
 
 //GET'S
 
@@ -236,7 +269,7 @@ router.get('/company/:username', function (req, res) {
 
 //Make Admin
 router.post('/company/:idCompany/person/:idPerson/add-admin', function (req, res) {
-	var idPerson = req.headers.usertypeid || req.decode._doc._id;
+	var idPerson = req.headers.usertypeid || req.decoded._doc._id;
 	Company.addAdmin(req.params.idCompany, req.params.idPerson, function (err, company) {
 		if(err){
 			throw err;

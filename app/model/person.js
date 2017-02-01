@@ -144,3 +144,9 @@ module.exports.getUserOfLikedCampaign = function (id, callback) {
 	Person.findById(id, callback);
 }
 
+
+// Get Persons
+module.exports.getAllPersons = function (callback, limit) {
+	Person.find().populate(['userid']).exec(callback);
+}
+

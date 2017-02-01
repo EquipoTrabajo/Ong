@@ -11,7 +11,11 @@
               </a>
             </li>
             <li>
-              <img src="<%= userid.profile_picture %>" alt="..." class="img-circle profile_img">
+              <a href="" id="changeProfilePicture"><img src="<%= userid.profile_picture %>" alt="..." class="img-circle profile_img"></a>
+              <form action="POST" enctype="multipart/form-data" style="display: none;" id="formProfilePicture">
+                <input type="file" name="profilePicture" id="profilePicture">
+                <input type="submit">
+              </form>
             </li>
             <li>
               <a>
@@ -22,21 +26,11 @@
         </div>
 
         <h3 class="name"><%= userid.name %></h3>
+        <p><%= slogan %></p>
 
         <div class="flex">
           <ul class="list-inline count2">
-            <li>
-              <h3>123</h3>
-              <span>Articles</span>
-            </li>
-            <li>
-              <h3>1234</h3>
-              <span>Followers</span>
-            </li>
-            <li>
-              <h3>123</h3>
-              <span>Following</span>
-            </li>
+            <p><%= userid.address.city %>,<%= userid.address.state %>,<%= userid.address.country %></p>
           </ul>
         </div>
         <p>
@@ -44,5 +38,73 @@
         </p>
       </div>
     </div>
-    <button class="btn btn-primary">Aministrar</button>
   </div>
+
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>Default Example <small>Users</small></h2>
+        <ul class="nav navbar-right panel_toolbox">
+          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#">Settings 1</a>
+              </li>
+              <li><a href="#">Settings 2</a>
+              </li>
+            </ul>
+          </li>
+          <li><a class="close-link"><i class="fa fa-close"></i></a>
+          </li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <p class="text-muted font-13 m-b-30">
+          DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction function: <code>$().DataTable();</code>
+        </p>
+        <table id="datatable" class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>Nombre de usuario</th>
+              <th>Nombre</th>
+              <th>Ciudad</th>
+              <th>Edad</th>
+              <th>Añadir</th>
+            </tr>
+          </thead>
+
+
+          <tbody id="list-persons">
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $.get( "/persons", function( data ) {
+        for(var person in data) {
+          $('#list-persons').append("<tr><td>" + data[person].username + "</td><td>" + data[person].userid.name + "</td><td>" + data[person].userid.address.city + "</td><td>" + data[person].age + "</td><td><button type='button' class='btn btn-xs btn-primary addAdmin' data-idCompany='<%= _id %>' data-idPerson= " + data[person]._id + "><span class='glyphicon glyphicon-plus'></span></button></td></tr>");
+        }
+        $('.addAdmin').click(function (event) {
+          console.log('hice click');
+          $.post("/company/" + $(this).attr('data-idCompany') + "/person/" + $(this).attr('data-idPerson') + "/add-admin", function (data) {
+            console.log('done');
+          });
+        });
+      });
+
+      $('#changeProfilePicture').click(function (event) {
+        event.preventDefault();
+        $('#profilePicture').click();
+        /*$('#formProfilePicture').submit(function () {
+          $.post("/user/<%= userid._id %>/upload_picture")
+        })*/
+      })
+    });
+  </script>
