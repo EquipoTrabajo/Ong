@@ -105,6 +105,23 @@
         /*$('#formProfilePicture').submit(function () {
           $.post("/user/<%= userid._id %>/upload_picture")
         })*/
-      })
+      });
+
+      $('#profilePicture').on('change', function () {
+        var data = new FormData();
+        var files=$(this).get(0).files;
+        data.append('file', files[0]);
+        $.ajax({
+            url: '/user/<%= userid._id %>/upload_picture',
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            success: function(data){
+                console.log(data);
+            }
+        });
+      });
     });
   </script>

@@ -60,5 +60,5 @@ module.exports.getUserById = function (id, callback) {
 
 //change profile picture
 module.exports.changeProfilePicture = function (idUser, picture, callback) {
-	Person.update({ _id: idUser }, {profile_picture: picture}, callback);
+	User.update({ _id: idUser }, {profile_picture: picture}, callback);
 }
