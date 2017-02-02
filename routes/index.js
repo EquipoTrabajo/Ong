@@ -10,6 +10,7 @@ var Comment = require('../app/model/comment');
 var Review = require('../app/model/review');
 var Acknowledgment = require('../app/model/acknowledgment');
 var Activity = require('../app/model/activity');
+var Media = require('../app/model/media');
 var config = require('../app/config/config');
 var jwt    = require('jsonwebtoken');
 var Step = require('step');
@@ -213,6 +214,46 @@ router.post('/user/:idUser/upload_picture', function (req, res) {
             		throw err;
             	}
             	res.json(user);
+            });
+        });
+    });
+});
+
+router.post('/campaign/:idCampaign/upload_picture', function (req, res) {
+	var fstream;
+	var idPerson = req.decoded._doc._id;
+	var description = '';
+	console.log(req.body);
+    req.pipe(req.busboy);
+    req.busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+      console.log('Field [' + fieldname + ']: value: ' + val);
+      description = val;
+    });
+    req.busboy.on('file', function (fieldname, file, filename) {
+        console.log("Uploading: " + filename);
+
+        //Path where image will be uploaded
+        fstream = fs.createWriteStream(path.resolve('./public/uploads/images/') + '/' + filename);
+        file.pipe(fstream);
+        fstream.on('close', function () {    
+            console.log("Upload Finished of " + filename);
+            var media = {
+            	'url': filename,
+            	'description': description,
+            	'campaign': req.params.idCampaign,
+            	'person': idPerson
+            }
+            
+            Media.addMedia(media, function (err, media) {
+            	if (err) {
+            		throw err;
+            	}
+            	Campaign.addPicture(req.params.idCampaign, media._id, function (err, campaign) {
+            		if (err) {
+	            		throw err;
+	            	}
+            		res.json(media);
+            	});
             });
         });
     });

@@ -98,6 +98,9 @@ var campaignSchema = new Schema({
 	updates: [{
 		type: Schema.Types.ObjectId, ref: 'Update'
 	}],
+	pictures: [{
+		type: Schema.Types.ObjectId, ref: 'Media'
+	}],
 	validated: {
 		type: Schema.Types.ObjectId, ref: 'ReceivingEntity'
 	}
@@ -145,9 +148,13 @@ module.exports.commentCampaign = function (idCampaign, idComment, callback) {
 	Campaign.update({ _id: idCampaign }, { $push: { comments: idComment }}, callback);
 }
 
+module.exports.addPicture = function (idCampaign, idPicture, callback) {
+	Campaign.update({ _id: idCampaign }, { $push: { pictures: idPicture }}, callback);
+}
+
 // Get Campaigns
 module.exports.getCampaignById = function (id, callback) {
-	Campaign.findById(id).populate(['volunteers', 'donors', 'comments', 'updates', 'donations']).exec(callback);
+	Campaign.findById(id).populate(['volunteers', 'donors', 'comments', 'updates', 'donations', 'pictures']).exec(callback);
 }
 
 

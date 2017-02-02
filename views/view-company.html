@@ -93,9 +93,11 @@
         }
         $('.addAdmin').click(function (event) {
           console.log('hice click');
-          $.post("/company/" + $(this).attr('data-idCompany') + "/person/" + $(this).attr('data-idPerson') + "/add-admin", function (data) {
-            console.log('done');
-          });
+          if(window.confirm("¿Estás Seguro?")){
+            $.post("/company/" + $(this).attr('data-idCompany') + "/person/" + $(this).attr('data-idPerson') + "/add-admin", function (data) {
+              console.log('done');
+            });
+          }
         });
       });
 
