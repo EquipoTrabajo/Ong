@@ -123,7 +123,7 @@ router.post('/authenticate', function(req, res) {
       var token = jwt.sign(user, config.secret);
       res.json({success: true, token: token});
     }
-  });
+  }).populate('userid');
 });
 
 //CREATE PERSON TO THE DATABASE
@@ -297,6 +297,24 @@ router.get('/person/:idPerson/activities', function (req, res) {
 	});
 });
 
+router.get('/campaign/:idCampaign/media', function (req, res) {
+	Media.getMediaByCampaign(req.params.idCampaign, function (err, medias) {
+		if (err) {
+			throw err;
+		}
+		res.json(medias);
+	});
+});
+
+router.get('/person/:idPerson/media', function (req, res) {
+	Media.getMediaByPerson(req.params.idPerson, function (err, person) {
+		if (err) {
+			throw err;
+		}
+		res.json(person);
+	});
+});
+
 // Get Company
 router.get('/company/:username', function (req, res) {
 	Company.getCompanyByUsername(req.params.username, function (err, company) {
@@ -360,8 +378,11 @@ router.get('/campaigns', function (req, res) {
 });
 
 // Get Nearby Campaigns
-router.get('/campaigns/nearby/:city', function (req, res) {
-	Campaign.getNearbyCampaigns(req.params.city, function (err, campaigns) {
+router.get('/campaigns/nearby/city', function (req, res) {
+	console.log(req.decoded);
+	var userCity = req.decoded._doc.userid.address.city;
+	console.log("Ciudad: " + userCity);
+	Campaign.getNearbyCampaigns(userCity, function (err, campaigns) {
 		if(err){
 			throw err;
 		}
@@ -372,7 +393,7 @@ router.get('/campaigns/nearby/:city', function (req, res) {
 
 // Get recommended Campaigns
 router.get('/campaigns/recommended/search', function (req, res) {
-	var userid = req.headers.usertypeid; //person id
+	var userid = req.headers.usertypeid || req.decode._doc._id; //person id
 	Campaign.getRecommendedCampaigns(userid, function (err, campaigns) {
 		if(err){
 			throw err;
@@ -383,7 +404,7 @@ router.get('/campaigns/recommended/search', function (req, res) {
 
 // Get friends Campaigns
 router.get('/campaigns/friends/search', function (req, res) {
-	var userid = req.headers.usertypeid; //person id
+	var userid = req.headers.usertypeid || req.decode._doc._id; //person id
 	Campaign.getFriendsDonatedCampaigns(userid, function (err, campaigns) {
 		if(err){
 			throw err;

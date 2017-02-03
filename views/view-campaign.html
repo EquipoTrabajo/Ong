@@ -213,31 +213,9 @@
       </div>
       <div class="x_content">
 
-        <div class="row">
+        <div class="row" id="mediaGallery">
 
           <p>Media gallery design emelents</p>
-
-          <% for(var i=0; i<campaign.pictures.length; i++) { %>
-	          <div class="col-md-55">
-	            <div class="thumbnail">
-	              <div class="image view view-first">
-	                <img style="width: 100%; display: block;" src="/uploads/images/<%= campaign.pictures[i].url %>" alt="image" />
-	                <div class="mask no-caption">
-	                  <div class="tools tools-bottom">
-	                    <a href="#"><i class="fa fa-link"></i></a>
-	                    <a href="#"><i class="fa fa-pencil"></i></a>
-	                    <a href="#"><i class="fa fa-times"></i></a>
-	                  </div>
-	                </div>
-	              </div>
-	              <div class="caption">
-	                <p><strong>Image Name</strong>
-	                </p>
-	                <p><%= campaign.pictures[i].description %></p>
-	              </div>
-	            </div>
-	          </div>
-          <% } %>
 
         </div>
         <form action="/campaign/<%= campaign._id %>/upload_picture" method="POST" enctype="multipart/form-data">
@@ -250,4 +228,15 @@
     </div>
   </div>
 </div>
+
+<script>
+  $(document).ready(function () {
+    $.get( '/campaign/<%= campaign._id %>/media', function( data ) {
+      for(var media in data) {
+        $('#mediaGallery').append("<div class='col-md-55'><div class='thumbnail'><div class='image view view-first'><img style='width: 100%; display: block;' src='/uploads/images/"+ data[media].url +"' alt='image' /><div class='mask no-caption'><div class='tools tools-bottom'><a href='#'><i class='fa fa-link'></i></a><a href='#'><i class='fa fa-pencil'></i></a><a href='#'><i class='fa fa-times'></i></a></div></div></div><div class='caption'><p><strong>" + data[media].person.name + "</strong></p><p>" + data[media].description + "</p></div></div></div>");
+        
+      }
+    });
+  });
+</script>
 

@@ -66,7 +66,8 @@ var campaignSchema = new Schema({
 		}
 	},
 	multimedia: [{
-		type: String
+		type: String,
+		url: String
 	}],
 	visits: {
 		type: Number
